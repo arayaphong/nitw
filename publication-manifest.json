@@ -71,7 +71,7 @@
     },
     {
       "path": "NITW-Unity-Reconstruction/Assets/Editor/RecoveredStationImporter.cs",
-      "sha256": "13ccd3cc3ab53d922adae47db4adca03b60d8bea45b88273718d1898374ab372",
+      "sha256": "f5c0ee6f24631dbf19891aced6dd2df909ff0cf4be180c8568a8ffeb0904c304",
       "review": "authored Unity import/build/verification adapter",
       "changes": [],
       "mode": "100644"
@@ -178,7 +178,7 @@
     },
     {
       "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationPlayerCheck.cs",
-      "sha256": "b8f03741b355be2922443cee77181a757b95fcb57797db75ae153a513c64088c",
+      "sha256": "9c6ac0cdbcb1a54dcee5d22fea9371f4555119b2404b5189336142e08ff02e19",
       "review": "authored schema, interop, text renderer or diagnostic",
       "changes": [],
       "mode": "100644"

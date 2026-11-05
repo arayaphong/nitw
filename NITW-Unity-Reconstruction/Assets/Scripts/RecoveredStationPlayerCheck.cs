@@ -74,7 +74,10 @@ public sealed class RecoveredStationPlayerCheck : MonoBehaviour {
         float floorY=player.transform.position.y;
         Vector3 start=player.transform.position;
         Measure("initialFloorY",floorY);
+        CheckIdleHead("on entry");
         Capture("station-player-idle.png");
+        yield return Drive(0,7);
+        CheckIdleHead("after idle and blink cycles");
 
         // A half-axis input is below the original .6 run threshold.
         yield return Drive(-.5f,.7f);
@@ -82,6 +85,9 @@ public sealed class RecoveredStationPlayerCheck : MonoBehaviour {
         Check(Mathf.Abs(Mathf.Abs(player.Velocity.x)-2.5f)<.08f,"walk speed reaches original 2.5");
         Check(player.Animation!=null&&player.Animation.CurrentState.Contains("Walk"),"walking selects recovered Walk animation");
         Measure("walkSpeed",Mathf.Abs(player.Velocity.x));
+        yield return Drive(0,.4f);
+        CheckIdleHead("after walking");
+        Capture("station-player-idle-after-walk.png");
         float cameraBefore=station.sceneCamera.transform.position.x;
         yield return Drive(-1,.8f);
         Check(Mathf.Abs(Mathf.Abs(player.Velocity.x)-4.25f)<.08f,"full-axis reaches original run speed 4.25");
@@ -95,6 +101,8 @@ public sealed class RecoveredStationPlayerCheck : MonoBehaviour {
         Check(Mathf.Abs(station.sceneCamera.transform.position.y-.15f)<.003f,"camera keeps source Y lock while moving");
         yield return Drive(0,.4f);
         Check(Mathf.Abs(player.Velocity.x)<.001f,"source friction stops horizontal movement");
+        CheckIdleHead("after running");
+        Capture("station-player-idle-after-run.png");
 
         // Turn is a source clip with gameplay callbacks, rather than an
         // instantaneous mirror. Measure both its intermediate event and the
@@ -133,6 +141,8 @@ public sealed class RecoveredStationPlayerCheck : MonoBehaviour {
         Check(Mathf.Abs(player.transform.position.y-jumpFloor)<.012f,"landing does not sink through floor");
         Measure("tapJumpHeight",tapHeight);Measure("tapJumpFlightTime",tapTime);
         yield return Drive(0,.4f);
+        CheckIdleHead("after jumping");
+        Capture("station-player-idle-after-jump.png");
         player.ResetDiagnosticPose(testPose);
         yield return Drive(0,.2f);
         jumpFloor=player.transform.position.y;
@@ -230,6 +240,7 @@ public sealed class RecoveredStationPlayerCheck : MonoBehaviour {
         Check(Mathf.Abs(player.transform.position.x-rightX)<.012f,"continued input cannot cross right wall");
         yield return Drive(0,.5f);
         Check(CameraWithinLimits(),"camera respects right source constraint");
+        CheckIdleHead("facing right");
         Check(player.Grounded,"player remains supported after room traversal");
         Capture("station-player-right-boundary.png");
         Check(SceneManager.GetActiveScene().name=="BusStation","movement does not load the next scene");
@@ -239,6 +250,19 @@ public sealed class RecoveredStationPlayerCheck : MonoBehaviour {
         Finish();
     }
 
+    private void CheckIdleHead(string label) {
+        var head=player.Animation.transform.Find("Rig/Head/HeadBack").GetComponent<SpriteRenderer>();
+        var node=Array.Find(station.source.nodes,n=>n.id==236);
+        var source=Array.Find(station.source.sprites,s=>s.key==node.sprite.sprite);
+        var sprite=head.sprite;
+        var pivot=new Vector2(sprite.pivot.x/sprite.rect.width,sprite.pivot.y/sprite.rect.height);
+        Check(player.Animation.CurrentState.Contains("Idle"),"idle pose active "+label);
+        Check(Vector2.Distance(pivot,source.pivot)<.00001f,"head uses native sprite pivot "+label);
+        var center=new Vector3((.5f-source.pivot.x)*sprite.rect.width/source.ppu,
+            (.5f-source.pivot.y)*sprite.rect.height/source.ppu,0);
+        var expected=head.transform.TransformPoint(center);
+        Check(Vector3.Distance(head.bounds.center,expected)<.0001f,"rendered head position matches native pivot "+label);
+    }
     private IEnumerator Drive(float horizontal,float duration) {
         float end=Time.time+duration;
         while(Time.time<end) {Input(horizontal);yield return null;}

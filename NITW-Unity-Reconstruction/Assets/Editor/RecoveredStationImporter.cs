@@ -14,12 +14,21 @@ public static class RecoveredStationImporter {
         var sprites=new Dictionary<string,Sprite>();var materials=new Dictionary<string,Material>();var meshes=new Dictionary<string,Mesh>();
         foreach(var d in data.sprites) {
             string path=Folder+d.key+".png";var importer=(TextureImporter)AssetImporter.GetAtPath(path);
-            importer.textureType=TextureImporterType.Sprite;importer.spritePixelsPerUnit=d.ppu;
+            importer.textureType=TextureImporterType.Sprite;importer.spriteImportMode=SpriteImportMode.Single;
+            importer.spritePixelsPerUnit=d.ppu;
             var settings=new TextureImporterSettings();importer.ReadTextureSettings(settings);
             settings.spriteAlignment=(int)SpriteAlignment.Custom;settings.spritePivot=d.pivot;settings.spriteMeshType=SpriteMeshType.FullRect;
             importer.SetTextureSettings(settings);importer.alphaIsTransparency=true;importer.mipmapEnabled=false;
             importer.maxTextureSize=8192;importer.textureCompression=TextureImporterCompression.Uncompressed;importer.SaveAndReimport();
             sprites[d.key]=AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            // Multiple mode uses each sheet entry's alignment and ignores the
+            // top-level custom pivot. Validate the loaded Sprite, not just the
+            // import settings (Mae's head pivot is .5,.2 rather than center).
+            var sprite=sprites[d.key];
+            if(sprite==null)throw new Exception("Station sprite missing: "+d.key);
+            var pivot=new Vector2(sprite.pivot.x/sprite.rect.width,sprite.pivot.y/sprite.rect.height);
+            if(Vector2.Distance(pivot,d.pivot)>.00001f||Mathf.Abs(sprite.pixelsPerUnit-d.ppu)>.00001f)
+                throw new Exception("Station sprite pivot/PPU mismatch: "+d.key+" actual="+pivot+" source="+d.pivot);
         }
         foreach(var d in data.textures) {
             var importer=(TextureImporter)AssetImporter.GetAtPath(Folder+d.key+".png");
