@@ -1,0 +1,390 @@
+{
+  "format": 1,
+  "scope": "reviewed authored tooling/support source only",
+  "files": [
+    {
+      "path": ".githooks/pre-push",
+      "review": "publication documentation, audit tooling or existing repository license",
+      "changes": [],
+      "sha256": "86676415291fd81045c53ca12a627a177eb2a3fbb207b6201a1e8ed368e6a0db",
+      "mode": "100755"
+    },
+    {
+      "path": ".gitignore",
+      "review": "publication documentation, audit tooling or existing repository license",
+      "changes": [],
+      "sha256": "025a55bb4012f3409a9369db23517037bba8de59ad28720fd4dcb4d0f6048370",
+      "mode": "100644"
+    },
+    {
+      "path": "LICENSE",
+      "review": "publication documentation, audit tooling or existing repository license",
+      "changes": [],
+      "sha256": "b4aa7d7ca59cc7aeaa6eed151f088259505b5284f5e6ed5aad708fe47f1f745f",
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Editor/CreateReferenceScene.cs",
+      "sha256": "94cee43627d69cd43ab9e32b1e3d9fc25616adc1faeff9380689ac1c3031c512",
+      "review": "authored Unity import/build/verification adapter",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Editor/DiagnoseIntroColor.cs",
+      "sha256": "03f46b81be30f0ddb796060eb02366cb6a71d30082db74e6fb65a696178710d9",
+      "review": "authored Unity import/build/verification adapter",
+      "changes": [
+        "replace local diagnostic output path"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Editor/RecoveredIntroImporter.cs",
+      "sha256": "a32510fc5265de0cd0f4a0946cd51e451990f294e8d93516b891a73641ee1f39",
+      "review": "authored Unity import/build/verification adapter",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Editor/RecoveredOptionsImporter.cs",
+      "sha256": "149c889030d77adc54d1db04f5402cf3263ed19fd1039e3d1482a9124e8eb005",
+      "review": "authored Unity import/build/verification adapter",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Editor/RecoveredPoemImporter.cs",
+      "sha256": "618504c04036a72ad582e25c3bd8e9ba6084649aa3fe6cf13abbf2423524807e",
+      "review": "authored Unity import/build/verification adapter",
+      "changes": [
+        "replace narrative metrics probe with synthetic text"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Editor/RecoveredStationAnimationImporter.cs",
+      "sha256": "5b8a16e77894d9e16b750372fd0abf4a2858a06b74bed4bd0426874d6c8b33bc",
+      "review": "authored Unity import/build/verification adapter",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Editor/RecoveredStationImporter.cs",
+      "sha256": "13ccd3cc3ab53d922adae47db4adca03b60d8bea45b88273718d1898374ab372",
+      "review": "authored Unity import/build/verification adapter",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Editor/RecoveredTitleImporter.cs",
+      "sha256": "ffe724a97ce763fff980031edd2a5c0418575ed1ce54bbdda918e0621d0d8bdc",
+      "review": "authored Unity import/build/verification adapter",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Editor/RecoveredTitleMenuImporter.cs",
+      "sha256": "070870cda34fb69dd813d02fac0cd6e5cc8e33f00e5ad46ef60f5b25e9dea77e",
+      "review": "authored Unity import/build/verification adapter",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Editor/VerifyRecoveredOptions.cs",
+      "sha256": "29d7f38adbe2a413d16bccc381f4c5e8a53f21b6defdc8a1a282eb8813a960a8",
+      "review": "authored Unity import/build/verification adapter",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredFireflyAudioCheck.cs",
+      "sha256": "3982e9578cc973e04333009009ab898a1102892231de4d69a6692367fb2b1ead",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredFireflyNative.cs",
+      "sha256": "c91865209b1827a6c38261fd3d6209245f5eb81b8599146fda409bf4ba70b5f7",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredIntroRuntimeCheck.cs",
+      "sha256": "4527a0e4bc97a24844570982856942221da8cbd00f5d8a346434203013a0f872",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredMurderflyRuntimeCheck.cs",
+      "sha256": "8e0ae740f3871f02f820ef10643d036dcb602ca6c120147d48d194c1c52af845",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredOptionsData.cs",
+      "sha256": "1840c28eeef2aa22d41600e306f49effd73bc81d5a3479b7533cc684cab3c9ed",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredPoemCheck.cs",
+      "sha256": "a7062e95f44a07ec7706f94306b3d267f1f012bd98c2f8723ffc0013e14d2bc2",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [
+        "remove narrative/translated narrative assertions"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredPoemData.cs",
+      "sha256": "ac5f5369ae841b346673efbdc1224d3bddea1db018e49283c62ebe05c84964d6",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredPoemThai.cs",
+      "sha256": "6e317bb0575e838608085da81070960fef356b071d3e3309f940aa46de513240",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationCheck.cs",
+      "sha256": "a34fcd9264b99a07aa62e9d88f15fda4aa2c29c9b4760fd6967c7b3796a91df9",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationData.cs",
+      "sha256": "894d5ea64b1d3a5a28228c4fff21c89ec73bc000c91ab02094916bdac557b704",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationMovementData.cs",
+      "sha256": "808667ae8ab4ae77eba8247063a59db1e770bf172eb1f3bfda972ff9dd8e6b92",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationPlayerCheck.cs",
+      "sha256": "b8f03741b355be2922443cee77181a757b95fcb57797db75ae153a513c64088c",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredTitleData.cs",
+      "sha256": "eabe637bd8ddcb1db5ad64154e894950d009952cbbe58473c3c936e972d3e084",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredTitleMenuCheck.cs",
+      "sha256": "07e5135197284b6c0b3019a9c4bc3f8d03c9a15511591e149a1259c22f9533e9",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredTitleMenuData.cs",
+      "sha256": "c72d0e0faff1a2854bcc18849dc5129f2cfac5b21b408ecd2e3f36e0d49981ec",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredTitleRuntimeCheck.cs",
+      "sha256": "bb9c33ac5765c64006b4c73e42bc745bc4e62612acebfde50636a4718bebc216",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Tools/extract_intro_scene.py",
+      "sha256": "02d670ae90a04a2c8dced4f24faad432d489b62ad27483dcbfcfc4013e025b7d",
+      "review": "authored Unity format decoder",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "PUBLICATION.md",
+      "review": "publication documentation, audit tooling or existing repository license",
+      "changes": [],
+      "sha256": "a90c82af47fc95bc4e7fa887455dea93953d2e93d8d8854c134a9da6e99d9559",
+      "mode": "100644"
+    },
+    {
+      "path": "README.md",
+      "review": "publication documentation, audit tooling or existing repository license",
+      "changes": [],
+      "sha256": "37e13ae6ad6ae67f92976983bd701eaafd43d94032ef4d55d23f033930e3b1c5",
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/extract_bus_station.py",
+      "sha256": "bac5dc66dea585ff677a5e0be00cfcc9136ca30d2793e8a696ad6bdc6c616acb",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/extract_intro_poem.py",
+      "sha256": "ef4cde89b8ac2a6da675f2860647856aa712f85e4fcc94ed4c1d8d79bb25bba1",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/extract_logo_audio.py",
+      "sha256": "d740674468a0f7a256951645b8de283a19ce7c98cfb8984d1fca3e07866ddd91",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/extract_options_scene.py",
+      "sha256": "b7523c6d357950da981ca19e851c620d116fd10a036fd0e25337a25f6a3d8213",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/extract_options_serialized_fields.py",
+      "sha256": "24bafaca6c0cb05e4803b4022b48ade8fe51bf5df32a5275e1b8e450a925226e",
+      "review": "authored serialized field reader",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/extract_station_animation.py",
+      "sha256": "ae76a025f1b03103a40657c88ad14c9298698c0f1ff145bb4acb0aed82e0c161",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/extract_station_movement.py",
+      "sha256": "c4dda0265009e70c400b9a828282116f757f163bb348ce9211c13140cab86ca3",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/extract_title_bloom.py",
+      "sha256": "b1c9cdcd398e77c3fb196c3a35a3b9b77c99d02e87dde29c7eb86f9a57105b8c",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/extract_title_leaves.py",
+      "sha256": "cd3e0fb5741317fe6b9158f6e29044f002b41331dda28f500736603b89b9d8f9",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/extract_title_menu.py",
+      "sha256": "afb2ec7a43bf6e8e5ae136f8b0076a8d8abd440371deeb39729b2d88f2111fb4",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/inspect_game_window.py",
+      "sha256": "18c9bb44e06f6134f70b669253efa63a79b84225d5c0cfcf12744f6aa0f2744e",
+      "review": "extractor or local inspection tool",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/inspect_gameplay_structure.py",
+      "sha256": "9b0d31b6f1b918fa62bd6e6e333a7b89fd8b4eed5314133bd428be31a6809ed3",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/prepare_firefly_audio.py",
+      "sha256": "cd5b000152944a44e703218932100ded5031f15ad684d6206c9bd4325e335e6e",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/prepare_intro_poem_th.py",
+      "sha256": "15a70cff577387b1f62b9d4623720ef4494240ea725a107aa6a4d0de3706b48c",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/validate_firefly_audio.py",
+      "sha256": "588d67eb78067a2dabcf1443201cae3078dc8208b5083db1dc5f790c75dbe4c3",
+      "review": "extractor or local inspection tool",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "requirements-tools.txt",
+      "review": "publication documentation, audit tooling or existing repository license",
+      "changes": [],
+      "sha256": "7b66b6539bc096a9208a9a2099c68afb6fab3ad7cfb9d5736b6cdcf861a20213",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/check_publication.py",
+      "review": "publication documentation, audit tooling or existing repository license",
+      "changes": [],
+      "sha256": "41430f4f84542496aa1d24c99fc8f5ab8f4179b03cdedbc9856535aa2bcf3be0",
+      "mode": "100644"
+    },
+    {
+      "path": "tests/test_publication.py",
+      "review": "publication documentation, audit tooling or existing repository license",
+      "changes": [],
+      "sha256": "5939473ad53f86b0af5b807d715d3e4e92033593e149056468ee1af7dd333ee1",
+      "mode": "100644"
+    }
+  ]
+}

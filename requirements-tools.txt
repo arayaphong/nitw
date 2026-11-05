@@ -1,0 +1,10 @@
+# Versions installed in the development workspace; dependencies are not vendored.
+UnityPy==1.25.4
+dnfile==0.18.0
+dncil==1.0.2
+TypeTreeGeneratorAPI==0.0.10
+freetype-py==2.5.1
+uharfbuzz==0.57.0
+fonttools==4.68.0
+pillow==13.0.0
+regex==2026.9.29
