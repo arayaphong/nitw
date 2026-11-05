@@ -86,7 +86,12 @@ public static class RecoveredStationImporter {
         stage.source=data;stage.sceneCamera=camera;stage.player=nodes[219].transform;
         stage.configuration=AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Resources/RecoveredTitle/Audio.json");
         var animation=RecoveredStationAnimationImporter.Attach(nodes);
-        RecoveredStationMovementImporter.Attach(nodes,stage,animation);
+        var player=RecoveredStationMovementImporter.Attach(nodes,stage,animation);
+        var janitor=RecoveredStationJanitorImporter.Attach(nodes,stage);
+        var dialogueView=RecoveredStationDialogueImporter.Attach(nodes);
+        var narration=stage.gameObject.AddComponent<RecoveredStationNarration>();
+        narration.station=stage;narration.player=player;narration.view=dialogueView;narration.janitor=janitor;
+        narration.programAsset=AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Resources/RecoveredStationEntry/Program.json");
         if(nodes.Count!=273||spriteCount!=174||meshCount!=4)throw new Exception("Station source counts differ.");
         Debug.Log("NITW_STATION_SOURCE_VERIFIED nodes="+nodes.Count+" sprites="+spriteCount+" meshes="+meshCount+" camera="+data.camera);
         AssetDatabase.SaveAssets();

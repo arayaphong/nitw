@@ -16,7 +16,10 @@
 !/Tools/extract_options_scene.py
 !/Tools/extract_options_serialized_fields.py
 !/Tools/extract_station_animation.py
+!/Tools/extract_station_dialogue.py
+!/Tools/extract_station_janitor.py
 !/Tools/extract_station_movement.py
+!/Tools/extract_station_narration.py
 !/Tools/extract_title_bloom.py
 !/Tools/extract_title_leaves.py
 !/Tools/extract_title_menu.py
@@ -39,7 +42,9 @@
 !/NITW-Unity-Reconstruction/Assets/Editor/RecoveredOptionsImporter.cs
 !/NITW-Unity-Reconstruction/Assets/Editor/RecoveredPoemImporter.cs
 !/NITW-Unity-Reconstruction/Assets/Editor/RecoveredStationAnimationImporter.cs
+!/NITW-Unity-Reconstruction/Assets/Editor/RecoveredStationDialogueImporter.cs
 !/NITW-Unity-Reconstruction/Assets/Editor/RecoveredStationImporter.cs
+!/NITW-Unity-Reconstruction/Assets/Editor/RecoveredStationJanitorImporter.cs
 !/NITW-Unity-Reconstruction/Assets/Editor/RecoveredTitleImporter.cs
 !/NITW-Unity-Reconstruction/Assets/Editor/RecoveredTitleMenuImporter.cs
 !/NITW-Unity-Reconstruction/Assets/Editor/VerifyRecoveredOptions.cs
@@ -54,7 +59,9 @@
 !/NITW-Unity-Reconstruction/Assets/Scripts/RecoveredPoemThai.cs
 !/NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationCheck.cs
 !/NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationData.cs
+!/NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationDialogueData.cs
 !/NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationMovementData.cs
+!/NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationNarrationCheck.cs
 !/NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationPlayerCheck.cs
 !/NITW-Unity-Reconstruction/Assets/Scripts/RecoveredTitleData.cs
 !/NITW-Unity-Reconstruction/Assets/Scripts/RecoveredTitleMenuCheck.cs

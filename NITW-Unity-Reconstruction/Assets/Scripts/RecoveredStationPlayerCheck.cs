@@ -67,6 +67,7 @@ public sealed class RecoveredStationPlayerCheck : MonoBehaviour {
         player.DiagnosticInput=true;Input();
         while((!station.Ready||!player.Ready)&&Time.realtimeSinceStartup<deadline)yield return null;
         Check(station.Ready&&player.Ready,"iris completes and controller becomes ready");
+        yield return RecoveredStationNarrationCheck.CompleteEntry(ok=>Check(ok,"source entry narration completes before movement checks"));
         yield return Drive(0,.4f);
         Check(player.Grounded,"initial pose snapped to source floor");
         Check(station.AudioReady&&station.NativeErrors==0,"station ambient audio remains healthy");

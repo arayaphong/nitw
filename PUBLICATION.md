@@ -13,7 +13,7 @@ The per-file review category, SHA-256 and publication-only transformations are i
 - All extracted or original game assets: textures, sprites, logos, audio, fonts, banks, DLLs, native libraries, scene hierarchies, meshes, animation clips/controllers/curves, materials and serialized source data.
 - Yarn stories/dialogue, IntroPoem, translations and shaped/glyph data containing those texts.
 - Research output, screenshots, recordings, saved games, logs, validation output and decompilation/CIL dumps.
-- Game-behavior runtime implementations transcribed closely from original CIL, including the current player movement, follow camera, character gaze/animation selection, title effects and startup sequence.
+- Game-behavior runtime implementations transcribed closely from original CIL, including the current player movement, follow camera, character gaze/animation selection, title effects, startup sequence, and BusStation narration/bubble/Janitor runtime behavior.
 - Recovered third-party shaders and close shader/post-processing translations. All shader files are omitted in this snapshot.
 - Dependency source/binaries, virtual environments, Unity caches, generated `.meta` files, builds and machine-specific preferences.
 

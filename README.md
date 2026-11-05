@@ -42,3 +42,5 @@ python3 scripts/check_publication.py --revision HEAD
 `.gitignore` ใช้ allowlist รายไฟล์ และ audit ตรวจชื่อไฟล์ ชนิดไฟล์ UTF-8 และ SHA-256 ตรงกับ manifest การเพิ่ม source ใหม่ต้องตรวจที่มาและปรับ manifest อย่างตั้งใจ การตรวจอัตโนมัติเหล่านี้ช่วยกันไฟล์หลุด แต่ไม่ใช่การยืนยันสิทธิ์ทางกฎหมายของ source ใหม่ทุกชนิด
 
 LICENSE ที่เจ้าของ repository เลือกไว้เดิมยังคงอยู่ ไม่ครอบคลุมหรือให้สิทธิ์ในเนื้อหาของเกม ซอฟต์แวร์ Unity หรือไลบรารี/ฟอนต์ของบุคคลอื่น Repository นี้ไม่ได้เป็นโครงการอย่างเป็นทางการของผู้สร้างเกม
+
+BusStation entry support adds local Yarn-node, sprite-font and Janitor animation extractors, Unity import adapters, a presentation DTO and an opt-in integration checker. The five-line story, extracted glyph sprites, generated animation/data, and source-derived narration/presentation/Janitor runtime implementations remain excluded. The public snapshot is still a partial source archive.

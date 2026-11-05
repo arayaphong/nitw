@@ -13,7 +13,7 @@
       "path": ".gitignore",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "025a55bb4012f3409a9369db23517037bba8de59ad28720fd4dcb4d0f6048370",
+      "sha256": "683e327506305c0f6dc6a800124a5baa174ba8ecf620e3c846cf84ca74bbe303",
       "mode": "100644"
     },
     {
@@ -70,8 +70,22 @@
       "mode": "100644"
     },
     {
+      "path": "NITW-Unity-Reconstruction/Assets/Editor/RecoveredStationDialogueImporter.cs",
+      "sha256": "b4b5a624967f2d7166c6bf205d8d402644d11037804d754869c42f3e4339760a",
+      "review": "authored Unity import/build/verification adapter",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
       "path": "NITW-Unity-Reconstruction/Assets/Editor/RecoveredStationImporter.cs",
-      "sha256": "f5c0ee6f24631dbf19891aced6dd2df909ff0cf4be180c8568a8ffeb0904c304",
+      "sha256": "e52b139df2a3c94183f11c3fa3b9fe86a493018f433acbb4f353829111e95bd3",
+      "review": "authored Unity import/build/verification adapter",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
+      "path": "NITW-Unity-Reconstruction/Assets/Editor/RecoveredStationJanitorImporter.cs",
+      "sha256": "22d9f4ee745330199989def45a41349f45dfe8f2506b74fe34e078ffc0b19cba",
       "review": "authored Unity import/build/verification adapter",
       "changes": [],
       "mode": "100644"
@@ -157,7 +171,7 @@
     },
     {
       "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationCheck.cs",
-      "sha256": "a34fcd9264b99a07aa62e9d88f15fda4aa2c29c9b4760fd6967c7b3796a91df9",
+      "sha256": "941f7c47196e0378c95b838e350bcdcfe85841cce35b3beba8bf19195ddd297e",
       "review": "authored schema, interop, text renderer or diagnostic",
       "changes": [],
       "mode": "100644"
@@ -170,6 +184,13 @@
       "mode": "100644"
     },
     {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationDialogueData.cs",
+      "sha256": "282916f0ef401cc00d3d15de50f0a8cb1f92236ab55db8b6278ab24159f6d66e",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
       "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationMovementData.cs",
       "sha256": "808667ae8ab4ae77eba8247063a59db1e770bf172eb1f3bfda972ff9dd8e6b92",
       "review": "authored schema, interop, text renderer or diagnostic",
@@ -177,8 +198,15 @@
       "mode": "100644"
     },
     {
+      "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationNarrationCheck.cs",
+      "sha256": "7116fdcb240d06d327bd458919dce21b0a3150b0797312e17b23c986031888aa",
+      "review": "authored schema, interop, text renderer or diagnostic",
+      "changes": [],
+      "mode": "100644"
+    },
+    {
       "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationPlayerCheck.cs",
-      "sha256": "9c6ac0cdbcb1a54dcee5d22fea9371f4555119b2404b5189336142e08ff02e19",
+      "sha256": "fa74e92a786d8dcfd7acd4ab65aedf1f7f43231fd341220d33a36b016f892cf5",
       "review": "authored schema, interop, text renderer or diagnostic",
       "changes": [],
       "mode": "100644"
@@ -224,14 +252,14 @@
       "path": "PUBLICATION.md",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "a90c82af47fc95bc4e7fa887455dea93953d2e93d8d8854c134a9da6e99d9559",
+      "sha256": "53adc4ba8ebd38d8a2692a9a36662f3cbcdcf1e2e64f7bc8336f5fe57c60a96f",
       "mode": "100644"
     },
     {
       "path": "README.md",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "37e13ae6ad6ae67f92976983bd701eaafd43d94032ef4d55d23f033930e3b1c5",
+      "sha256": "b6365b9e27d0d7ab210a91ac8d2b9efa305ea49d2018941757a122a937e73953",
       "mode": "100644"
     },
     {
@@ -289,8 +317,35 @@
       "mode": "100644"
     },
     {
+      "path": "Tools/extract_station_dialogue.py",
+      "sha256": "f1c10169a5d2eb02d5babaae98c9720f7f7df889253d8e9f02c85aa5777ecb6e",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/extract_station_janitor.py",
+      "sha256": "89083a803da9debe98c93b2abdf03cd13016fa0c89ea099bdbd0b6215b12bb0a",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
       "path": "Tools/extract_station_movement.py",
       "sha256": "c4dda0265009e70c400b9a828282116f757f163bb348ce9211c13140cab86ca3",
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "mode": "100644"
+    },
+    {
+      "path": "Tools/extract_station_narration.py",
+      "sha256": "d829e70d8ae3f6af3811fe967c302a7ff939ab9abf3082a07f6d4eec92c237fc",
       "review": "extractor or local inspection tool",
       "changes": [
         "replace user-specific paths with environment/relative paths"
@@ -376,7 +431,7 @@
       "path": "scripts/check_publication.py",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "41430f4f84542496aa1d24c99fc8f5ab8f4179b03cdedbc9856535aa2bcf3be0",
+      "sha256": "84b046ead9493fdc73a459c9f823fc1956962de11fad2dc04974bfdab46ff462",
       "mode": "100644"
     },
     {

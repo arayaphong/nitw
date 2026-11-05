@@ -16,10 +16,11 @@ RUNTIME_NAMES={
  'RecoveredStationData.cs','RecoveredStationMovementData.cs','RecoveredTitleData.cs','RecoveredTitleMenuData.cs',
  'RecoveredFireflyAudioCheck.cs','RecoveredIntroRuntimeCheck.cs','RecoveredMurderflyRuntimeCheck.cs',
  'RecoveredPoemCheck.cs','RecoveredStationCheck.cs','RecoveredStationPlayerCheck.cs','RecoveredTitleMenuCheck.cs',
- 'RecoveredTitleRuntimeCheck.cs'}
+ 'RecoveredTitleRuntimeCheck.cs','RecoveredStationNarrationCheck.cs','RecoveredStationDialogueData.cs'}
 EDITOR_NAMES={'CreateReferenceScene.cs','DiagnoseIntroColor.cs','RecoveredIntroImporter.cs','RecoveredOptionsImporter.cs',
  'RecoveredPoemImporter.cs','RecoveredStationAnimationImporter.cs','RecoveredStationImporter.cs',
- 'RecoveredTitleImporter.cs','RecoveredTitleMenuImporter.cs','VerifyRecoveredOptions.cs'}
+ 'RecoveredTitleImporter.cs','RecoveredTitleMenuImporter.cs','VerifyRecoveredOptions.cs',
+ 'RecoveredStationDialogueImporter.cs','RecoveredStationJanitorImporter.cs'}
 
 def eligible(path):
  p=pathlib.PurePosixPath(path)

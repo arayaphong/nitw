@@ -26,6 +26,7 @@ public sealed class RecoveredStationCheck : MonoBehaviour {
         Check(SceneManager.GetActiveScene().name=="BusStation","poem loads BusStation");
         var station=FindFirstObjectByType<RecoveredStation>();
         while(!station.Ready)yield return null;
+        yield return RecoveredStationNarrationCheck.CompleteEntry(ok=>Check(ok,"source entry narration completes before station idle checks"));
         Check(station.AudioReady&&station.NativeErrors==0,"native ambient audio");
         Check(FindFirstObjectByType<RecoveredPoem>()==null,"poem and wind scene unloaded");
         Check(Vector3.Distance(station.sceneCamera.transform.position,station.source.camera)<.08f,"source entry camera with idle drift");
