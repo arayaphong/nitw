@@ -32,6 +32,8 @@
 !/scripts/check_publication.py
 !/tests/
 !/tests/test_publication.py
+!/docs/
+!/docs/thai-mod-plan.md
 !/NITW-Unity-Reconstruction/Assets/
 !/NITW-Unity-Reconstruction/Tools/
 !/NITW-Unity-Reconstruction/Tools/extract_intro_scene.py

@@ -26,6 +26,8 @@ def eligible(path):
  p=pathlib.PurePosixPath(path)
  if p.is_absolute() or '..' in p.parts or str(p)!=path:return False
  if path in ROOT_FILES:return True
+ # Authored project documentation: Markdown directly under docs/ only.
+ if path.startswith('docs/'):return len(p.parts)==2 and p.suffix=='.md'
  if path.startswith('NITW-Unity-Reconstruction/Assets/Scripts/'):
   return len(p.parts)==4 and p.name in RUNTIME_NAMES
  if path.startswith('NITW-Unity-Reconstruction/Assets/Editor/'):

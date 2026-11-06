@@ -17,6 +17,9 @@ class PublicationTests(unittest.TestCase):
  def test_unlisted_asset_is_rejected(self):
   self.files['NITW-Unity-Reconstruction/Assets/Resources/image.png']=b'fake image'
   self.assertTrue(any('Forbidden path/type' in e for e in guard.audit(self.files)))
+ def test_docs_accept_only_top_level_markdown(self):
+  self.assertTrue(guard.eligible('docs/plan.md'))
+  for bad in ('docs/notes.txt','docs/sub/plan.md','docs/image.png'):self.assertFalse(guard.eligible(bad),bad)
  def test_binary_disguised_as_source_is_rejected(self):
   p='Tools/inspect_game_window.py';self.files[p]+=b'\0'
   self.assertTrue(any('Binary/NUL' in e for e in guard.audit(self.files)))

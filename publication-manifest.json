@@ -13,7 +13,7 @@
       "path": ".gitignore",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "683e327506305c0f6dc6a800124a5baa174ba8ecf620e3c846cf84ca74bbe303",
+      "sha256": "4c8f06c3bb077efa5261f7051189caf61e2b08da010feb7835307ada574cbb32",
       "mode": "100644"
     },
     {
@@ -421,6 +421,13 @@
       "mode": "100644"
     },
     {
+      "path": "docs/thai-mod-plan.md",
+      "review": "publication documentation, audit tooling or existing repository license",
+      "changes": [],
+      "sha256": "577df249b99a4c2e46ccd80bd869224c5d93c797f74338cdc08a303fd42af2f3",
+      "mode": "100644"
+    },
+    {
       "path": "requirements-tools.txt",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
@@ -431,14 +438,14 @@
       "path": "scripts/check_publication.py",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "84b046ead9493fdc73a459c9f823fc1956962de11fad2dc04974bfdab46ff462",
+      "sha256": "e04f099640ed59d818860dc63b598ae4f38c9c6594ba5d3855b2e1e7842a6dad",
       "mode": "100644"
     },
     {
       "path": "tests/test_publication.py",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "5939473ad53f86b0af5b807d715d3e4e92033593e149056468ee1af7dd333ee1",
+      "sha256": "f807b771984b7cf727597d5a37d0ce6c3a706bc6ae4d23cac3dd647159d5bc9b",
       "mode": "100644"
     }
   ]
