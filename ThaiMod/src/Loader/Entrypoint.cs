@@ -53,15 +53,58 @@ namespace Doorstop {
             catch { Console.Error.WriteLine("[NITWThai] " + line); }
         }
 
-        // (type, method, hook) — hook is a static void Hook(string) in
-        // NITWThai.Runtime.Hooks, called with the method's first argument.
+        // (type, method, hook in NITWThai.Runtime.Hooks, kind, arguments).
+        // observe:  call Hook(args) at method entry, then run the method.
+        // override: r = Hook(args); if r != null return r; else run the method.
+        // Arguments: "this" (passed as object) or "argN" (Nth parameter).
         static readonly string[][] Hooks = {
-            new[] { "Yarn.Program", "GetString", "OnGetString" },
-            new[] { "SpriteText", "SetText", "OnSetText" },
-            // Do not hook Global.LoadLevel: with that hook the title menu's
-            // confirm button (Rewired Interact/Jump) stopped responding while
-            // axes kept working. Cause not yet understood; bisected 2026-11-06.
+            new[] { "Yarn.Program", "GetString", "OnGetString", "override", "arg0" },
+            new[] { "SpriteFont", "GetCharData", "OnGetCharData", "override", "this,arg0" },
+            new[] { "SpriteText", "SetText", "OnSetText", "observe", "arg0" },
+            // Known-safe set only. Patching Global.LoadLevel, or adding
+            // SpeechBubble.Say + DialogueImplementation.ShowPoemLine, made the
+            // title menu ignore confirm (Rewired Interact/Jump) while axes kept
+            // working, even before any hook ran. Cause not yet understood
+            // (2026-11-06); verify confirm at Title after any change here.
         };
+
+        // Does `method` fit hook spec `h` for hook method `hook`?
+        static bool Matches(MethodDefinition method, string[] h, MethodDefinition hook) {
+            if (method.Name != h[1] || !method.HasBody) return false;
+            string[] args = h[4].Split(',');
+            if (hook.Parameters.Count != args.Length) return false;
+            for (int k = 0; k < args.Length; k++) {
+                string want = hook.Parameters[k].ParameterType.FullName;
+                if (args[k] == "this") { if (method.IsStatic || want != "System.Object") return false; continue; }
+                int n = int.Parse(args[k].Substring(3));
+                if (n >= method.Parameters.Count || method.Parameters[n].ParameterType.FullName != want) return false;
+            }
+            if (h[3] == "override") {
+                string ret = hook.ReturnType.FullName;
+                if (ret != method.ReturnType.FullName && ret != "System.Object") return false;
+                if (method.ReturnType.IsValueType) return false;   // null means "no override"
+            }
+            return true;
+        }
+
+        static void Inject(MethodDefinition method, string[] h, MethodReference hookRef, MethodDefinition hook) {
+            var il = method.Body.GetILProcessor();
+            var first = method.Body.Instructions[0];
+            var code = new List<Instruction>();
+            foreach (string a in h[4].Split(','))
+                code.Add(a == "this" ? il.Create(OpCodes.Ldarg_0) : il.Create(OpCodes.Ldarg, method.Parameters[int.Parse(a.Substring(3))]));
+            code.Add(il.Create(OpCodes.Call, hookRef));
+            if (h[3] == "override") {
+                if (hook.ReturnType.FullName != method.ReturnType.FullName)
+                    code.Add(il.Create(OpCodes.Castclass, method.ReturnType));
+                var fallThrough = il.Create(OpCodes.Pop);
+                code.Add(il.Create(OpCodes.Dup));
+                code.Add(il.Create(OpCodes.Brfalse, fallThrough));
+                code.Add(il.Create(OpCodes.Ret));
+                code.Add(fallThrough);
+            }
+            foreach (var ins in code) il.InsertBefore(first, ins);
+        }
 
         static void Patch(bool hooks) {
             var resolver = new DefaultAssemblyResolver();
@@ -86,22 +129,22 @@ namespace Doorstop {
                 if (type == null) { Log("missing type " + h[0]); continue; }
                 MethodDefinition hook = null;
                 foreach (var m in hookType.Methods) if (m.Name == h[2]) hook = m;
+                if (hook == null) throw new MissingMethodException("NITWThai.Runtime.Hooks", h[2]);
                 var hookRef = module.ImportReference(hook);
                 foreach (var method in type.Methods) {
-                    if (method.Name != h[1] || !method.HasBody || method.Parameters.Count == 0 ||
-                        method.Parameters[0].ParameterType.FullName != "System.String") continue;
-                    var il = method.Body.GetILProcessor();
-                    var first = method.Body.Instructions[0];
-                    il.InsertBefore(first, il.Create(OpCodes.Ldarg, method.Parameters[0]));
-                    il.InsertBefore(first, il.Create(OpCodes.Call, hookRef));
+                    if (!Matches(method, h, hook)) continue;
+                    Inject(method, h, hookRef, hook);
                     patched++;
-                    Log("hooked " + method.FullName + " -> " + h[2]);
+                    Log("hooked " + method.FullName + " -> " + h[2] + " (" + h[3] + ")");
                 }
                 // Every spec must match at least one overload, or nothing is patched.
                 if (patched == before) throw new InvalidOperationException("no method matched " + h[0] + "::" + h[1]);
             }
             var ms = new MemoryStream();
             game.Write(ms);
+            // Diagnostics: NITWTHAI_DUMP=1 saves the patched image for inspection.
+            if (Environment.GetEnvironmentVariable("NITWTHAI_DUMP") == "1")
+                File.WriteAllBytes(Path.Combine(modDir, "Assembly-CSharp.patched.dll"), ms.ToArray());
             // Load the runtime first so the patched image's reference resolves.
             Assembly.LoadFrom(Path.Combine(modDir, "NITWThai.Runtime.dll"));
             var loaded = Assembly.Load(ms.ToArray());

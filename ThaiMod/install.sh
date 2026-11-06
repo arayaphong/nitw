@@ -19,6 +19,8 @@ install)
     done
     mkdir -p "$GAME/NITWThai"
     cp "$HERE/out/NITWThai.Loader.dll" "$HERE/out/NITWThai.Runtime.dll" "$HERE/lib/Mono.Cecil.dll" "$GAME/NITWThai/"
+    rm -rf "$GAME/NITWThai/data"
+    if [ -d "$HERE/data" ]; then cp -a "$HERE/data" "$GAME/NITWThai/"; fi
     rm -rf "$GAME/doorstop_libs"; cp -a "$HERE/lib/doorstop_libs" "$GAME/"
     cp "$HERE/run_nitwthai.sh" "$GAME/"; chmod +x "$GAME/run_nitwthai.sh"
     printf '%s\n' NITWThai doorstop_libs run_nitwthai.sh > "$LIST"

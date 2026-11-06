@@ -80,3 +80,8 @@
 !/ThaiMod/build.sh
 !/ThaiMod/install.sh
 !/ThaiMod/tools/cil_dump.py
+!/Tools/prepare_thai_mod.py
+!/ThaiMod/src/Runtime/ThaiFont.cs
+!/ThaiMod/src/Runtime/ThaiPoemFont.cs
+!/ThaiMod/src/Runtime/PoemLineFix.cs
+!/docs/thai-mod-phase1.md

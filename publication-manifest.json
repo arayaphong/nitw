@@ -13,7 +13,7 @@
       "path": ".gitignore",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "7b6eb6189b3c02a2ac4b7540310ccb349e41f9ce0055d3b35e2a0029556bd4c0",
+      "sha256": "d32e280edb7f7b11bb7f56a3a7aad337f8331ffbbcd21c31fc91d104358e1e72",
       "mode": "100644"
     },
     {
@@ -266,28 +266,49 @@
       "review": "authored Thai mod loader, runtime hook or tooling",
       "changes": [],
       "path": "ThaiMod/build.sh",
-      "sha256": "12388b80e2aac32a25adb821de658ff9f3bc8210b36d82e7d7a988ac809cc0c5",
+      "sha256": "356b2101be2761f85503bbb7f190cd42edce48109d855f76452ff03b6eb48325",
       "mode": "100755"
     },
     {
       "review": "authored Thai mod loader, runtime hook or tooling",
       "changes": [],
       "path": "ThaiMod/install.sh",
-      "sha256": "87e658308d1611962bd448ed13c1c653884a2d82f8ce325b28dd4847448b6c8c",
+      "sha256": "e008ad5e6b9199f216b18371f2424945c10b1e8f62885a0673717fff91a0872d",
       "mode": "100755"
     },
     {
       "review": "authored Thai mod loader, runtime hook or tooling",
       "changes": [],
       "path": "ThaiMod/src/Loader/Entrypoint.cs",
-      "sha256": "0312756c2079f3329cce68a77a573e2d09a3071b960ced96481cc18dd7370881",
+      "sha256": "a827a94d46b8da25d756adbd698a2606e1a1f40199d4798308cf5155b27505a5",
       "mode": "100644"
     },
     {
       "review": "authored Thai mod loader, runtime hook or tooling",
       "changes": [],
       "path": "ThaiMod/src/Runtime/Hooks.cs",
-      "sha256": "b2836fc228a17a1ced13ac2821a3cc38d2ce9722fa96923a77bbc71d6a037fcd",
+      "sha256": "6476061a3b7bd24c85f478bf1669318f6a6cf4e0030c978eb4ab9be58c6e09b0",
+      "mode": "100644"
+    },
+    {
+      "review": "authored Thai mod loader, runtime hook or tooling",
+      "changes": [],
+      "path": "ThaiMod/src/Runtime/PoemLineFix.cs",
+      "sha256": "653aa0568c9f71cd85d22665eb996aa76ba82bfec060d03b2bbb79e2e38588f2",
+      "mode": "100644"
+    },
+    {
+      "review": "authored Thai mod loader, runtime hook or tooling",
+      "changes": [],
+      "path": "ThaiMod/src/Runtime/ThaiFont.cs",
+      "sha256": "684203aefd9b53871796b9260e6f62f8949390a1aec3498524878537f2276439",
+      "mode": "100644"
+    },
+    {
+      "review": "authored Thai mod loader, runtime hook or tooling",
+      "changes": [],
+      "path": "ThaiMod/src/Runtime/ThaiPoemFont.cs",
+      "sha256": "32d1c47cca89bb0a23478686414cca6c3a5f078c6629c762e4aeefe857b33a3c",
       "mode": "100644"
     },
     {
@@ -449,6 +470,13 @@
       "mode": "100644"
     },
     {
+      "review": "extractor or local inspection tool",
+      "changes": [],
+      "path": "Tools/prepare_thai_mod.py",
+      "sha256": "87342972295c096c7fd164d709e2fb1ab733889fc81bb00ac98e113a83bacbbe",
+      "mode": "100644"
+    },
+    {
       "path": "Tools/validate_firefly_audio.py",
       "sha256": "588d67eb78067a2dabcf1443201cae3078dc8208b5083db1dc5f790c75dbe4c3",
       "review": "extractor or local inspection tool",
@@ -460,6 +488,13 @@
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
       "sha256": "74b990f0bb02ff4d5c18b1203f4e3239c4916e2676e9c60f3562d2526c689976",
+      "mode": "100644"
+    },
+    {
+      "path": "docs/thai-mod-phase1.md",
+      "review": "publication documentation, audit tooling or existing repository license",
+      "changes": [],
+      "sha256": "4f61ee98fc79b9e0212f8e5c594084874a489898036f855ef25d299d704ee947",
       "mode": "100644"
     },
     {

@@ -1,6 +1,6 @@
-// Runtime side of the NITW Thai mod. Phase 0: trace which Yarn string keys
-// (line IDs) the game looks up and which strings SpriteText actually draws.
-// Output goes to NITWThai/trace.log next to the game; nothing else changes.
+// Entry points the patched game calls. Signatures use only mscorlib types so
+// the loader can import them into Assembly-CSharp without a self-reference;
+// override hooks return null to let the original method run unchanged.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,10 +25,25 @@ namespace NITWThai.Runtime {
             } catch { }
         }
 
-        public static void OnGetString(string key) {
-            // Program.GetString runs for every line/option shown; log each key
-            // once per session to keep the trace readable.
-            if (key != null && seenKeys.Add(key)) Write("key", key);
+        public static void Log(string message) { Write("log", message); }
+
+        // Yarn.Program.GetString(key): Thai display string, or null for original.
+        public static string OnGetString(string key) {
+            try {
+                if (key != null && seenKeys.Add(key)) Write("key", key);
+                bool poem;
+                string thai = ThaiFont.Translate(key, out poem);
+                // The game fetches a whole node's lines when it starts, before
+                // the poem coroutine clones its TextMesh prefab.
+                if (poem) ThaiPoemFont.ApplyToScene();
+                return thai;
+            } catch (Exception e) { Write("error", "GetString " + e.Message); return null; }
+        }
+
+        // SpriteFont.GetCharData(char): Thai cluster CharData, or null for original.
+        public static object OnGetCharData(object font, char c) {
+            try { return ThaiFont.Get(font as SpriteFont, c); }
+            catch (Exception e) { Write("error", "GetCharData " + e.Message); return null; }
         }
 
         public static void OnSetText(string text) {
