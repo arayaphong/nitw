@@ -26,6 +26,13 @@ def eligible(path):
  p=pathlib.PurePosixPath(path)
  if p.is_absolute() or '..' in p.parts or str(p)!=path:return False
  if path in ROOT_FILES:return True
+ # Authored Thai mod sources only: src/<Module>/*.cs, top-level build/install
+ # scripts and tools/*.py. The launcher adapted from BepInEx, dependency
+ # binaries (lib/), game copies, logs and saves stay local.
+ if path.startswith('ThaiMod/'):
+  return (len(p.parts)==4 and p.parts[1]=='src' and p.suffix=='.cs'
+   or len(p.parts)==2 and p.suffix=='.sh' and p.name!='run_nitwthai.sh'
+   or len(p.parts)==3 and p.parts[1]=='tools' and p.suffix=='.py')
  # Authored project documentation: Markdown directly under docs/ only.
  if path.startswith('docs/'):return len(p.parts)==2 and p.suffix=='.md'
  if path.startswith('NITW-Unity-Reconstruction/Assets/Scripts/'):

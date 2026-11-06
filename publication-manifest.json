@@ -13,7 +13,7 @@
       "path": ".gitignore",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "9f9f5e41b4b612a980b3f08503e88b1a1bcd0fbf94ece4a75e36710dab8a6500",
+      "sha256": "7b6eb6189b3c02a2ac4b7540310ccb349e41f9ce0055d3b35e2a0029556bd4c0",
       "mode": "100644"
     },
     {
@@ -252,7 +252,7 @@
       "path": "PUBLICATION.md",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "53adc4ba8ebd38d8a2692a9a36662f3cbcdcf1e2e64f7bc8336f5fe57c60a96f",
+      "sha256": "ff9898d9a6eccfb95d57549fff71906b165bb4b715304b77e1af0e6b683fbd1f",
       "mode": "100644"
     },
     {
@@ -260,6 +260,41 @@
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
       "sha256": "b6365b9e27d0d7ab210a91ac8d2b9efa305ea49d2018941757a122a937e73953",
+      "mode": "100644"
+    },
+    {
+      "review": "authored Thai mod loader, runtime hook or tooling",
+      "changes": [],
+      "path": "ThaiMod/build.sh",
+      "sha256": "12388b80e2aac32a25adb821de658ff9f3bc8210b36d82e7d7a988ac809cc0c5",
+      "mode": "100755"
+    },
+    {
+      "review": "authored Thai mod loader, runtime hook or tooling",
+      "changes": [],
+      "path": "ThaiMod/install.sh",
+      "sha256": "87e658308d1611962bd448ed13c1c653884a2d82f8ce325b28dd4847448b6c8c",
+      "mode": "100755"
+    },
+    {
+      "review": "authored Thai mod loader, runtime hook or tooling",
+      "changes": [],
+      "path": "ThaiMod/src/Loader/Entrypoint.cs",
+      "sha256": "0312756c2079f3329cce68a77a573e2d09a3071b960ced96481cc18dd7370881",
+      "mode": "100644"
+    },
+    {
+      "review": "authored Thai mod loader, runtime hook or tooling",
+      "changes": [],
+      "path": "ThaiMod/src/Runtime/Hooks.cs",
+      "sha256": "b2836fc228a17a1ced13ac2821a3cc38d2ce9722fa96923a77bbc71d6a037fcd",
+      "mode": "100644"
+    },
+    {
+      "review": "authored Thai mod loader, runtime hook or tooling",
+      "changes": [],
+      "path": "ThaiMod/tools/cil_dump.py",
+      "sha256": "22fa66616f14f9c621ad1f6e95d6d8bb793ee4ce6d22a5e318da650922769317",
       "mode": "100644"
     },
     {
@@ -445,14 +480,14 @@
       "path": "scripts/check_publication.py",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "e04f099640ed59d818860dc63b598ae4f38c9c6594ba5d3855b2e1e7842a6dad",
+      "sha256": "4732bb8074959b43e13a9927ca7d22fbae89c8416aa30623e9f78ddd1f10c21d",
       "mode": "100644"
     },
     {
       "path": "tests/test_publication.py",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "f807b771984b7cf727597d5a37d0ce6c3a706bc6ae4d23cac3dd647159d5bc9b",
+      "sha256": "1bf5ec33c542de103cc64391b963600be4326e2a4804d76fc934e4bea0d52275",
       "mode": "100644"
     }
   ]

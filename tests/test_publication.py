@@ -20,6 +20,10 @@ class PublicationTests(unittest.TestCase):
  def test_docs_accept_only_top_level_markdown(self):
   self.assertTrue(guard.eligible('docs/plan.md'))
   for bad in ('docs/notes.txt','docs/sub/plan.md','docs/image.png'):self.assertFalse(guard.eligible(bad),bad)
+ def test_thaimod_accepts_only_authored_sources(self):
+  for ok in ('ThaiMod/src/Loader/Entrypoint.cs','ThaiMod/build.sh','ThaiMod/tools/cil_dump.py'):self.assertTrue(guard.eligible(ok),ok)
+  for bad in ('ThaiMod/run_nitwthai.sh','ThaiMod/lib/Mono.Cecil.dll','ThaiMod/lib/doorstop_libs/libdoorstop_x64.so',
+              'ThaiMod/game/NITWThai/trace.log','ThaiMod/src/Loader/Entrypoint.dll','ThaiMod/src/Entrypoint.cs'):self.assertFalse(guard.eligible(bad),bad)
  def test_binary_disguised_as_source_is_rejected(self):
   p='Tools/inspect_game_window.py';self.files[p]+=b'\0'
   self.assertTrue(any('Binary/NUL' in e for e in guard.audit(self.files)))

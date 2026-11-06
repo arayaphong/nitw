@@ -70,3 +70,13 @@
 !/NITW-Unity-Reconstruction/Assets/Scripts/RecoveredTitleMenuCheck.cs
 !/NITW-Unity-Reconstruction/Assets/Scripts/RecoveredTitleMenuData.cs
 !/NITW-Unity-Reconstruction/Assets/Scripts/RecoveredTitleRuntimeCheck.cs
+!/ThaiMod/
+!/ThaiMod/src/
+!/ThaiMod/src/Loader/
+!/ThaiMod/src/Runtime/
+!/ThaiMod/tools/
+!/ThaiMod/src/Loader/Entrypoint.cs
+!/ThaiMod/src/Runtime/Hooks.cs
+!/ThaiMod/build.sh
+!/ThaiMod/install.sh
+!/ThaiMod/tools/cil_dump.py

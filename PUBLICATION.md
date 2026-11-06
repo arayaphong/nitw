@@ -8,6 +8,8 @@ Python format readers, local export preparation and diagnostics; handwritten Uni
 
 The per-file review category, SHA-256 and publication-only transformations are in `publication-manifest.json`. User-specific absolute paths were replaced with environment/relative paths. A narrative text used as a font measurement probe was replaced with synthetic text. Two narrative-specific test assertions were removed. These changes apply to this publication snapshot; the working playable project was not modified.
 
+Thai mod (`ThaiMod/`): the authored loader (`src/Loader`), runtime hooks (`src/Runtime`), build/install scripts and a static CIL inspection tool. The loader patches the game's assembly in memory at launch; no game assembly or patched output is included.
+
 ## Kept local
 
 - All extracted or original game assets: textures, sprites, logos, audio, fonts, banks, DLLs, native libraries, scene hierarchies, meshes, animation clips/controllers/curves, materials and serialized source data.
@@ -16,6 +18,7 @@ The per-file review category, SHA-256 and publication-only transformations are i
 - Game-behavior runtime implementations transcribed closely from original CIL, including the current player movement, follow camera, character gaze/animation selection, title effects, startup sequence, and BusStation narration/bubble/Janitor runtime behavior.
 - Recovered third-party shaders and close shader/post-processing translations. All shader files are omitted in this snapshot.
 - Dependency source/binaries, virtual environments, Unity caches, generated `.meta` files, builds and machine-specific preferences.
+- Thai mod third-party parts and runtime output: `Mono.Cecil.dll`, UnityDoorstop libraries and the launcher adapted from BepInEx's `run_bepinex.sh` (all from `BepInEx_unix_5.4.22.0.zip`), compiled mod DLLs, game copies, trace/loader logs and save backups. Thai translations and shaped glyph data stay local as narrative text.
 
 The omitted implementations have not been cleared for public redistribution here. This conservative omission is a publication decision, not a legal finding about all reverse engineering or about every possible reimplementation. A functional complete public player would need a separate provenance/rights review or independently authored replacements for the omitted pieces.
 
