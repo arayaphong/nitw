@@ -13,7 +13,7 @@
       "path": ".gitignore",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "4c8f06c3bb077efa5261f7051189caf61e2b08da010feb7835307ada574cbb32",
+      "sha256": "9f9f5e41b4b612a980b3f08503e88b1a1bcd0fbf94ece4a75e36710dab8a6500",
       "mode": "100644"
     },
     {
@@ -421,10 +421,17 @@
       "mode": "100644"
     },
     {
+      "path": "docs/thai-mod-phase0.md",
+      "review": "publication documentation, audit tooling or existing repository license",
+      "changes": [],
+      "sha256": "acd31c2ffd027b26cdd7f7cd3cf97a0230a6ed4e07a07c02d15dc31d684ccc46",
+      "mode": "100644"
+    },
+    {
       "path": "docs/thai-mod-plan.md",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "577df249b99a4c2e46ccd80bd869224c5d93c797f74338cdc08a303fd42af2f3",
+      "sha256": "290fbfc31735a38a6757ad33127e91003562dc3f8a0037f23b18e2bc8508195f",
       "mode": "100644"
     },
     {

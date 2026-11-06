@@ -11,7 +11,9 @@
 
 งานสร้างเกมขึ้นใหม่ทีละฉาก (`NITW-Unity-Reconstruction`) **พักไว้ก่อน** การถอด CIL มาเขียนพฤติกรรมใหม่ทุกฉากไม่คุ้มเมื่อเทียบกับขนาดเกม (195 ฉาก, คำสั่ง Yarn 257 ชื่อ, Brain เฉพาะฉาก 34 ชนิด)
 
-แนวทางใหม่คือ **mod บนเกมเดิม**: ใช้ `Assembly-CSharp.dll`, ฉาก, เสียง และระบบเซฟของเกมจริงทั้งหมด แล้วเพิ่มเฉพาะภาษาไทยและตัววาดตัวอักษรไทยด้วย BepInEx 5 + Harmony ไม่แก้ไฟล์เกมต้นฉบับ
+แนวทางใหม่คือ **mod บนเกมเดิม**: ใช้ `Assembly-CSharp.dll`, ฉาก, เสียง และระบบเซฟของเกมจริงทั้งหมด แล้วเพิ่มเฉพาะภาษาไทยและตัววาดตัวอักษรไทย ไม่แก้ไฟล์เกมต้นฉบับ
+
+> **อัปเดตจากเฟส 0:** แผนเดิมใช้ BepInEx 5 + Harmony แต่ MonoMod ทำ runtime detour บน Mono ของ Unity 5.6 ไม่ได้ (ทดสอบ BepInEx 5.4.17–5.4.23.5) จึงเปลี่ยนเป็น **UnityDoorstop + Mono.Cecil patch `Assembly-CSharp` ใน memory** ก่อน Unity โหลด ซึ่งพิสูจน์แล้วว่าใช้ได้ รายละเอียดใน `docs/thai-mod-phase0.md`
 
 งาน Android จะทำทีหลังด้วยการ re-host: นำ DLL และ assets เดิมไปลง Unity project (เช่น export ด้วย AssetRipper) แล้วเปลี่ยนเฉพาะชั้นแพลตฟอร์ม (FMOD Android, Steam stub, Rewired/ระบบสัมผัส) ข้อมูลภาษาไทยจาก mod จะใช้ต่อได้ทั้งหมด
 
@@ -35,8 +37,8 @@
 
 ### เฟส 0: ฐาน mod (ยังไม่มีคำแปล)
 
-- ติดตั้ง BepInEx 5 บนเกม Steam Linux และตั้ง launch option ของ Steam
-- plugin ตัวแรกบันทึก line ID ทุกบรรทัดที่เกมแสดง พร้อมชื่อไฟล์ Yarn และโหนด
+- ~~ติดตั้ง BepInEx 5~~ → loader ของเราเอง (Doorstop + Cecil) พร้อม `install.sh` และตั้ง launch option ของ Steam
+- hook ตัวแรกบันทึก line ID ทุกบรรทัดที่เกมแสดง ข้อความที่วาด และชื่อฉาก
 - อ่าน CIL ของ `Localization`, `LocalisedStringGroup`, `SpriteText.SetText/ParseText/SpawnLetter` และจุดที่ `DialogueRunner` รับ string table เพื่อหาจุดเสียบที่น้อยที่สุด
 - **เสร็จเมื่อ:** เกมเปิดผ่าน Steam พร้อม mod ได้, เล่นและเซฟได้ปกติ, มี log line ID, และถอด mod ออกแล้วเกมกลับเป็นเหมือนเดิม
 
@@ -85,7 +87,8 @@
 
 ## ความเสี่ยงและคำถามค้าง
 
-- ยังไม่ได้ทดสอบ BepInEx 5 กับเกมนี้บน Linux (Unity 5.6, Mono) — เฟส 0 ต้องพิสูจน์
+- ~~ยังไม่ได้ทดสอบ BepInEx 5 กับเกมนี้~~ — ทดสอบแล้วใช้ไม่ได้; ใช้ Doorstop + Cecil แทน (เฟส 0)
+- การทดสอบอัตโนมัติที่ต้องกดปุ่มยังทำไม่ได้ (XTest ไม่ถึงระบบ input ของเกม) — อาจต้องทำตัวช่วยทดสอบใน mod
 - ยังไม่รู้ว่าระบบ `Localization` เปิดเลือกภาษาผ่าน UI ได้หรือถูกปิดไว้ (`enableLanguageSwitch`, `overrideLanguage`)
 - ข้อความบางส่วนอาจไม่ผ่าน Yarn/`SpriteText` (เช่น UI, TextMesh) ต้องหาจุดเสียบแยก
 - งานแปล ~150,000 คำเป็นงานใหญ่: ร่างแปลทีละบทแล้วให้ผู้ใช้ตรวจสำนวน
