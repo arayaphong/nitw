@@ -7,11 +7,12 @@ using UnityEngine;
 public static class RecoveredStationAnimationImporter {
     const string Folder="Assets/Resources/RecoveredStationAnimation/";
     const string Generated="Assets/RecoveredStationAnimation/";
-    [Serializable] public class Source {public State[] states;public Clip[] clips;public SpriteData[] sprites;public int eyeCenter,pivot;public EyeData[] eyes;public TargetData[] lookTargets;}
+    [Serializable] public class Source {public State[] states;public Layer[] facialLayers;public Clip[] clips;public SpriteData[] sprites;public int eyeCenter,pivot;public EyeData[] eyes;public TargetData[] lookTargets;}
     [Serializable] public class EyeData {public int node;public Vector2 offset;public float dilation,lookSpeed,radius;public Vector3 shape;}
     [Serializable] public class TargetData {public int node,pivot,tracker;public Vector3 headPosition,detectOffset;public float range;public bool despiteFacing;}
-    [Serializable] public class State {public string name;public int clip;public float speed;public bool loop;public Transition[] transitions;}
-    [Serializable] public class Transition {public string destination;public float duration,offset,exitTime;public bool hasExitTime,fixedDuration,canTransitionToSelf;public Condition[] conditions;}
+    [Serializable] public class Layer {public string name,defaultState;public float defaultWeight;public int blendingMode;public bool iKPass;public State[] states;}
+    [Serializable] public class State {public string name;public int clip;public float speed,cycleOffset;public bool loop,writeDefaultValues,iKOnFeet,mirror;public Transition[] transitions;}
+    [Serializable] public class Transition {public string destination;public float duration,offset,exitTime;public bool hasExitTime,fixedDuration,canTransitionToSelf,orderedInterruption;public int interruptionSource;public Condition[] conditions;}
     [Serializable] public class Condition {public string parameter;public int mode;public float threshold;}
     [Serializable] public class SpriteData {public int id;public string name;public float ppu;public Vector2 pivot;}
     [Serializable] public class Clip {public int id;public string name;public float length,sampleRate;public bool loop;public FloatCurve[] floatCurves;public ObjectCurve[] objectCurves;public Event[] events;}
@@ -68,7 +69,10 @@ public static class RecoveredStationAnimationImporter {
                 importer.userData="RecoveredStationAnimation:"+d.id;importer.SaveAndReimport();
             }
             sprites[d.id]=AssetDatabase.LoadAssetAtPath<Sprite>(p);
-            if(sprites[d.id]==null)throw new Exception("Missing Mae sprite "+d.id);
+            var sprite=sprites[d.id];
+            if(sprite==null||Mathf.Abs(sprite.pixelsPerUnit-d.ppu)>.00001f||
+                Vector2.Distance(new Vector2(sprite.pivot.x/sprite.rect.width,sprite.pivot.y/sprite.rect.height),d.pivot)>.00001f)
+                throw new Exception("Mae loaded sprite pivot/PPU mismatch "+d.id);
         }
         var clips=new Dictionary<int,AnimationClip>();int curveCount=0;
         foreach(var d in source.clips) {
@@ -87,14 +91,27 @@ public static class RecoveredStationAnimationImporter {
                 Type type=f.component=="Transform"?typeof(Transform):f.component=="GameObject"?typeof(GameObject):f.component=="SpriteRenderer"?typeof(SpriteRenderer):typeof(RecoveredStationExistsVariable);
                 AnimationUtility.SetEditorCurve(clip,EditorCurveBinding.FloatCurve(f.path,type,f.property),curve);curveCount++;
             }
+            // Native hold clips (MaeMouthSmileHold, MaeSquintBothHold) key every
+            // sprite only at t=0 and rely on m_StopTime for their length. Unity 6
+            // derives a sprite-only clip's length as last key + one frame, so a
+            // zero key range yields 1/sampleRate. A terminal key repeating the
+            // same sprite one frame before the source length restores it;
+            // sampled values are unchanged.
+            bool zeroRange=d.floatCurves.Length==0&&d.events.Length==0&&d.objectCurves.Length>0&&d.length>1f/d.sampleRate+.0001f;
+            foreach(var f in d.objectCurves)foreach(var k in f.keys)if(k.time>0)zeroRange=false;
             foreach(var f in d.objectCurves) {
-                var keys=new ObjectReferenceKeyframe[f.keys.Length];for(int i=0;i<keys.Length;i++)keys[i]=new ObjectReferenceKeyframe{time=f.keys[i].time,value=sprites[f.keys[i].sprite]};
+                int n=f.keys.Length;var keys=new ObjectReferenceKeyframe[zeroRange?n+1:n];for(int i=0;i<n;i++)keys[i]=new ObjectReferenceKeyframe{time=f.keys[i].time,value=sprites[f.keys[i].sprite]};
+                if(zeroRange)keys[n]=new ObjectReferenceKeyframe{time=d.length-1f/d.sampleRate,value=keys[n-1].value};
                 AnimationUtility.SetObjectReferenceCurve(clip,EditorCurveBinding.PPtrCurve(f.path,typeof(SpriteRenderer),f.property),keys);curveCount++;
             }
             var settings=AnimationUtility.GetAnimationClipSettings(clip);settings.loopTime=d.loop;settings.startTime=0;settings.stopTime=d.length;AnimationUtility.SetAnimationClipSettings(clip,settings);
             var events=new AnimationEvent[d.events.Length];for(int i=0;i<events.Length;i++)events[i]=new AnimationEvent{time=d.events[i].time,functionName=d.events[i].function,messageOptions=SendMessageOptions.RequireReceiver};AnimationUtility.SetAnimationEvents(clip,events);
             EditorUtility.SetDirty(clip);clips[d.id]=clip;
-            if(Mathf.Abs(clip.length-d.length)>.0001f)throw new Exception("Mae duration mismatch "+d.name);
+            // Empty native MaeNothing has no bound curves or events. Unity's
+            // empty-clip duration representation is not used by its outgoing
+            // transitions, which are all condition driven without exit time.
+            if((d.floatCurves.Length+d.objectCurves.Length+d.events.Length)>0&&Mathf.Abs(clip.length-d.length)>.0001f)
+                throw new Exception("Mae duration mismatch "+d.name+" unity="+clip.length.ToString("R")+" source="+d.length.ToString("R")+" zeroRange="+zeroRange);
             if(AnimationUtility.GetCurveBindings(clip).Length!=d.floatCurves.Length || AnimationUtility.GetObjectReferenceCurveBindings(clip).Length!=d.objectCurves.Length)throw new Exception("Mae curve mismatch "+d.name);
         }
         string controllerPath=Generated+"MaeRig.controller";AssetDatabase.DeleteAsset(controllerPath);var controller=AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
@@ -107,18 +124,29 @@ public static class RecoveredStationAnimationImporter {
             transition.exitTime=t.exitTime;transition.hasExitTime=t.hasExitTime;transition.hasFixedDuration=t.fixedDuration;transition.canTransitionToSelf=t.canTransitionToSelf;
             foreach(var condition in t.conditions)transition.AddCondition((AnimatorConditionMode)condition.mode,condition.threshold,condition.parameter);
         }
-        // Native secondary layers Hair (default loop) and neutral Eyes/Blink.
-        // Other expression states remain outside this walking milestone.
-        var hairMachine=new AnimatorStateMachine{name="Hair"};AssetDatabase.AddObjectToAsset(hairMachine,controller);
-        var hair=hairMachine.AddState("MaeHairLoop");hair.motion=clips[6144];hair.speed=1;hair.writeDefaultValues=true;hairMachine.defaultState=hair;
-        controller.AddLayer(new AnimatorControllerLayer{name="Hair",defaultWeight=1,stateMachine=hairMachine,blendingMode=AnimatorLayerBlendingMode.Override});
-        var eyesMachine=new AnimatorStateMachine{name="Eyes"};AssetDatabase.AddObjectToAsset(eyesMachine,controller);
-        var neutral=eyesMachine.AddState("MaeNothing");neutral.writeDefaultValues=true;
-        var blink=eyesMachine.AddState("MaeBlink");blink.motion=clips[6126];blink.speed=1;blink.writeDefaultValues=true;eyesMachine.defaultState=neutral;
+        // Native Hair plus only the original neutral/squint/smile facial
+        // subgraphs used by the scoped Janitor dialogue. No new poses.
         controller.AddParameter("Blink",AnimatorControllerParameterType.Trigger);
-        var blinkIn=neutral.AddTransition(blink);blinkIn.duration=0;blinkIn.hasExitTime=false;blinkIn.canTransitionToSelf=false;blinkIn.AddCondition(AnimatorConditionMode.If,0,"Blink");
-        var blinkOut=blink.AddTransition(neutral);blinkOut.duration=0;blinkOut.hasExitTime=true;blinkOut.exitTime=1;blinkOut.hasFixedDuration=false;blinkOut.canTransitionToSelf=false;
-        controller.AddLayer(new AnimatorControllerLayer{name="Eyes",defaultWeight=1,stateMachine=eyesMachine,blendingMode=AnimatorLayerBlendingMode.Override});
+        controller.AddParameter("eyes",AnimatorControllerParameterType.Int);
+        controller.AddParameter("mood",AnimatorControllerParameterType.Int);
+        foreach(var l in source.facialLayers) {
+            var sm=new AnimatorStateMachine{name=l.name};AssetDatabase.AddObjectToAsset(sm,controller);
+            var facialStates=new Dictionary<string,AnimatorState>();
+            foreach(var d in l.states) {
+                var state=sm.AddState(d.name);state.motion=d.clip==0?null:clips[d.clip];state.speed=d.speed;
+                state.cycleOffset=d.cycleOffset;state.writeDefaultValues=d.writeDefaultValues;state.iKOnFeet=d.iKOnFeet;state.mirror=d.mirror;
+                facialStates[d.name]=state;
+            }
+            sm.defaultState=facialStates[l.defaultState];
+            foreach(var d in l.states)foreach(var t in d.transitions) {
+                var transition=facialStates[d.name].AddTransition(facialStates[t.destination]);transition.duration=t.duration;
+                transition.offset=t.offset;transition.exitTime=t.exitTime;transition.hasExitTime=t.hasExitTime;
+                transition.hasFixedDuration=t.fixedDuration;transition.canTransitionToSelf=t.canTransitionToSelf;
+                transition.interruptionSource=(TransitionInterruptionSource)t.interruptionSource;transition.orderedInterruption=t.orderedInterruption;
+                foreach(var condition in t.conditions)transition.AddCondition((AnimatorConditionMode)condition.mode,condition.threshold,condition.parameter);
+            }
+            controller.AddLayer(new AnimatorControllerLayer{name=l.name,defaultWeight=l.defaultWeight,stateMachine=sm,blendingMode=(AnimatorLayerBlendingMode)l.blendingMode,iKPass=l.iKPass});
+        }
         var root=nodes[52];var animator=root.AddComponent<Animator>();animator.runtimeAnimatorController=controller;animator.applyRootMotion=false;animator.cullingMode=AnimatorCullingMode.AlwaysAnimate;
         var bridge=root.AddComponent<RecoveredStationAnimation>();bridge.animator=animator;
         var gaze=root.AddComponent<RecoveredStationGaze>();gaze.eyeCenter=nodes[source.eyeCenter].transform;gaze.pivot=nodes[source.pivot].transform;

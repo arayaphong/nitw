@@ -20,6 +20,22 @@ for si in selected:
   t=v['data'];destination=t['m_DestinationState'];assert destination in selected
   tr.append(dict(destination=tos[machine['m_StateConstantArray'][destination]['data']['m_NameID']],duration=t['m_TransitionDuration'],offset=t['m_TransitionOffset'],exitTime=t['m_ExitTime'],hasExitTime=t['m_HasExitTime'],fixedDuration=t['m_HasFixedDuration'],canTransitionToSelf=t['m_CanTransitionToSelf'],conditions=[dict(mode=v['data']['m_ConditionMode'],parameter=tos[v['data']['m_EventID']],threshold=v['data']['m_EventThreshold']) for v in t['m_ConditionConstantArray']]))
  states.append(dict(index=si,name=tos[s['m_NameID']],clip=ci,speed=s['m_Speed'],loop=s['m_Loop'],transitions=tr))
+# Narrow original secondary layers used by Janitor dialogue emotes: neutral,
+# smile mood2 and squint eyes1, including their native blink/return paths.
+facial_layers=[]
+for mi,selection in {1:[0],2:list(range(6)),3:list(range(4))}.items():
+ layer=c['m_Controller']['m_LayerArray'][mi]['data'];sm=c['m_Controller']['m_StateMachineArray'][layer['m_StateMachineIndex']]['data'];facial_states=[]
+ for si in selection:
+  st=sm['m_StateConstantArray'][si]['data'];ci=0
+  if st['m_BlendTreeConstantArray']:
+   bi=st['m_BlendTreeConstantArray'][0]['data']['m_NodeArray'][0]['data']['m_ClipID'];ci=c['m_AnimationClips'][bi]['m_PathID'];clipids.add(ci)
+  transitions=[]
+  for tv in st['m_TransitionConstantArray']:
+   t=tv['data'];destination=t['m_DestinationState']
+   if destination not in selection:continue
+   transitions.append(dict(destination=tos[sm['m_StateConstantArray'][destination]['data']['m_NameID']],duration=t['m_TransitionDuration'],offset=t['m_TransitionOffset'],exitTime=t['m_ExitTime'],hasExitTime=t['m_HasExitTime'],fixedDuration=t['m_HasFixedDuration'],canTransitionToSelf=t['m_CanTransitionToSelf'],interruptionSource=t['m_InterruptionSource'],orderedInterruption=t['m_OrderedInterruption'],conditions=[dict(mode=cv['data']['m_ConditionMode'],parameter=tos[cv['data']['m_EventID']],threshold=cv['data']['m_EventThreshold'])for cv in t['m_ConditionConstantArray']]))
+  facial_states.append(dict(index=si,name=tos[st['m_NameID']],clip=ci,speed=st['m_Speed'],loop=st['m_Loop'],cycleOffset=st['m_CycleOffset'],iKOnFeet=st['m_IKOnFeet'],mirror=st['m_Mirror'],writeDefaultValues=st['m_WriteDefaultValues'],transitions=transitions))
+ facial_layers.append(dict(name=tos[layer['m_Binding']],defaultState=tos[sm['m_StateConstantArray'][sm['m_DefaultState']]['data']['m_NameID']],defaultWeight=layer['m_DefaultWeight'],blendingMode=layer['(int&)m_LayerBlendingMode'],iKPass=layer['m_IKPass'],states=facial_states))
 def sprite(id):
  if id in sprites:return
  s=idx[id].read();im=s.m_RD.texture.read().image
@@ -75,6 +91,6 @@ targets=[]
 for x in components:
  if x['type']=='Character' and x['fields']['m_GameObject']['m_PathID']!=219 and x['fields']['isLookTarget']:
   f=x['fields'];targets.append(dict(node=f['m_GameObject']['m_PathID'],pivot=go(f['pivot']),tracker=go(f['headTracker']),headPosition=f['headPosition'],detectOffset=f['lookTargetDetectOffset'],range=f['lookTargetRange'],despiteFacing=bool(f['lookAtDespiteFacing'])))
-out=dict(source=str(ROOT/'sharedassets0.assets'),sha256=hashlib.sha256((ROOT/'sharedassets0.assets').read_bytes()).hexdigest(),controllerPathId=6338,animatorGameObjectId=52,eyeCenter=go(head['eyeCenter']),pivot=go(head['pivot']),eyes=eyes,lookTargets=targets,states=states,clips=clips,sprites=list(sprites.values()),unboundPaths=unknown)
-(DEST/'Animation.json').write_text(json.dumps(out,indent=2));(WORK/'research/bus-station/animation-source-summary.json').write_text(json.dumps(dict(source=out['source'],sha256=out['sha256'],states=states,clips=[{k:v for k,v in x.items() if k not in ['floatCurves','objectCurves']} for x in clips],sprites=len(sprites),unboundPaths=unknown),indent=2))
-print('Recovered',len(states),'states',len(clips),'clips',len(sprites),'sprites',sum(len(x['floatCurves'])+len(x['objectCurves']) for x in clips),'bindings; unbound',unknown)
+out=dict(source=str(ROOT/'sharedassets0.assets'),sha256=hashlib.sha256((ROOT/'sharedassets0.assets').read_bytes()).hexdigest(),controllerPathId=6338,animatorGameObjectId=52,eyeCenter=go(head['eyeCenter']),pivot=go(head['pivot']),eyes=eyes,lookTargets=targets,states=states,facialLayers=facial_layers,clips=clips,sprites=list(sprites.values()),unboundPaths=unknown)
+(DEST/'Animation.json').write_text(json.dumps(out,indent=2));(WORK/'research/bus-station/animation-source-summary.json').write_text(json.dumps(dict(source=out['source'],sha256=out['sha256'],states=states,facialLayers=facial_layers,clips=[{k:v for k,v in x.items() if k not in ['floatCurves','objectCurves']} for x in clips],sprites=len(sprites),unboundPaths=unknown),indent=2))
+print('Recovered',len(states),'base states +',sum(len(l['states']) for l in facial_layers),'secondary states',len(clips),'clips',len(sprites),'sprites',sum(len(x['floatCurves'])+len(x['objectCurves']) for x in clips),'bindings; unbound',unknown)

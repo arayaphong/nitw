@@ -5,15 +5,28 @@ using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 
-// Restores only the native controller path reached by EnterLevel drilling=1.
+// Restores the shipped entry/drill/relax, blink and speech controller subset.
 public static class RecoveredStationJanitorImporter {
     const string Folder="Assets/Resources/RecoveredStationJanitor/";
     const string Generated="Assets/RecoveredStationJanitor/";
     [Serializable] private sealed class Source {
-        public RecoveredStationAnimationImporter.State[] states;
+        public SourceLayer[] layers;
+        public Parameter[] parameters;
         public RecoveredStationAnimationImporter.Clip[] clips;
         public RecoveredStationAnimationImporter.SpriteData[] sprites;
-        public string drillEvent;public int drillEmitter,clothEmitter;public float drillFade;
+        public string drillEvent,drillIdleEvent;public int drillEmitter,drillIdleEmitter,clothEmitter,talkAnimType;
+        public float drillFade,minBlinkDelay,maxBlinkDelay;
+    }
+    [Serializable] private sealed class Parameter {public string name;public int type,defaultInt;public bool defaultBool;}
+    [Serializable] private sealed class SourceLayer {
+        public string name,defaultState;public float defaultWeight;public int blendingMode;public bool iKPass;public SourceState[] states;
+    }
+    [Serializable] private sealed class SourceState {
+        public string name;public int clip;public float speed,cycleOffset;public bool writeDefaultValues,iKOnFeet,mirror;public SourceTransition[] transitions;
+    }
+    [Serializable] private sealed class SourceTransition {
+        public string destination;public float duration,offset,exitTime;public bool hasExitTime,fixedDuration,canTransitionToSelf,orderedInterruption;
+        public int interruptionSource;public RecoveredStationAnimationImporter.Condition[] conditions;
     }
     public static RecoveredStationJanitor Attach(Dictionary<int,GameObject> nodes,RecoveredStation station) {
         Directory.CreateDirectory(Generated);AssetDatabase.Refresh();
@@ -31,7 +44,7 @@ public static class RecoveredStationJanitorImporter {
             importer.maxTextureSize=4096;importer.wrapMode=TextureWrapMode.Clamp;importer.filterMode=FilterMode.Bilinear;
             importer.SaveAndReimport();
             var sprite=AssetDatabase.LoadAssetAtPath<Sprite>(path);sprites[d.id]=sprite;
-            if(sprite==null||Vector2.Distance(new Vector2(sprite.pivot.x/sprite.rect.width,sprite.pivot.y/sprite.rect.height),d.pivot)>.00001f)
+            if(sprite==null||Mathf.Abs(sprite.pixelsPerUnit-d.ppu)>.00001f||Vector2.Distance(new Vector2(sprite.pivot.x/sprite.rect.width,sprite.pivot.y/sprite.rect.height),d.pivot)>.00001f)
                 throw new Exception("Janitor loaded pivot mismatch "+d.id);
         }
         var clips=new Dictionary<int,AnimationClip>();int curveCount=0;
@@ -67,27 +80,41 @@ public static class RecoveredStationJanitorImporter {
         }
         string controllerPath=Generated+"JanitorEntry.controller";
         AssetDatabase.DeleteAsset(controllerPath);var controller=AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
-        controller.AddParameter("flip",AnimatorControllerParameterType.Int);
-        controller.AddParameter("drilling",AnimatorControllerParameterType.Int);
-        controller.AddParameter("walking",AnimatorControllerParameterType.Bool);
-        var machine=controller.layers[0].stateMachine;var states=new Dictionary<string,AnimatorState>();
-        foreach(var d in source.states) {
-            var state=machine.AddState(d.name);state.motion=clips[d.clip];state.speed=d.speed;state.writeDefaultValues=true;states[d.name]=state;
+        foreach(var p in source.parameters) {
+            controller.AddParameter(new AnimatorControllerParameter{name=p.name,type=(AnimatorControllerParameterType)p.type,defaultInt=p.defaultInt,defaultBool=p.defaultBool});
         }
-        machine.defaultState=states["JanitorBod_Idle_R"];
-        foreach(var d in source.states)foreach(var t in d.transitions) {
-            var transition=states[d.name].AddTransition(states[t.destination]);transition.duration=t.duration;
-            transition.offset=t.offset;transition.exitTime=t.exitTime;transition.hasExitTime=t.hasExitTime;
-            transition.hasFixedDuration=t.fixedDuration;transition.canTransitionToSelf=t.canTransitionToSelf;
-            foreach(var condition in t.conditions)transition.AddCondition((AnimatorConditionMode)condition.mode,condition.threshold,condition.parameter);
+        int stateCount=0;
+        for(int layerIndex=0;layerIndex<source.layers.Length;layerIndex++) {
+            var sourceLayer=source.layers[layerIndex];
+            if(layerIndex>0)controller.AddLayer(sourceLayer.name);
+            var layers=controller.layers;var layer=layers[layerIndex];layer.name=sourceLayer.name;
+            layer.defaultWeight=sourceLayer.defaultWeight;layer.blendingMode=(AnimatorLayerBlendingMode)sourceLayer.blendingMode;
+            layer.iKPass=sourceLayer.iKPass;
+            var machine=layer.stateMachine;var states=new Dictionary<string,AnimatorState>();
+            foreach(var d in sourceLayer.states) {
+                var state=machine.AddState(d.name);state.motion=d.clip==0?null:clips[d.clip];state.speed=d.speed;
+                state.cycleOffset=d.cycleOffset;state.writeDefaultValues=d.writeDefaultValues;state.iKOnFeet=d.iKOnFeet;state.mirror=d.mirror;
+                states[d.name]=state;stateCount++;
+            }
+            machine.defaultState=states[sourceLayer.defaultState];
+            foreach(var d in sourceLayer.states)foreach(var t in d.transitions) {
+                var transition=states[d.name].AddTransition(states[t.destination]);transition.duration=t.duration;
+                transition.offset=t.offset;transition.exitTime=t.exitTime;transition.hasExitTime=t.hasExitTime;
+                transition.hasFixedDuration=t.fixedDuration;transition.canTransitionToSelf=t.canTransitionToSelf;
+                transition.interruptionSource=(TransitionInterruptionSource)t.interruptionSource;transition.orderedInterruption=t.orderedInterruption;
+                foreach(var condition in t.conditions)transition.AddCondition((AnimatorConditionMode)condition.mode,condition.threshold,condition.parameter);
+            }
+            layers[layerIndex]=layer;controller.layers=layers;
         }
         var root=nodes[266];var animator=root.AddComponent<Animator>();animator.runtimeAnimatorController=controller;
         animator.applyRootMotion=false;animator.cullingMode=AnimatorCullingMode.AlwaysAnimate;
         var bridge=root.AddComponent<RecoveredStationJanitor>();bridge.animator=animator;bridge.character=nodes[117].transform;
         bridge.drillEmitter=nodes[source.drillEmitter].transform;bridge.clothEmitter=nodes[source.clothEmitter].transform;
-        bridge.drillEvent=source.drillEvent;bridge.drillFade=source.drillFade;bridge.station=station;
+        bridge.drillEvent=source.drillEvent;bridge.drillIdleEvent=source.drillIdleEvent;bridge.drillIdleEmitter=nodes[source.drillIdleEmitter].transform;
+        bridge.drillFade=source.drillFade;bridge.station=station;bridge.minBlinkDelay=source.minBlinkDelay;bridge.maxBlinkDelay=source.maxBlinkDelay;
+        bridge.talkAnimType=source.talkAnimType;
         AssetDatabase.SaveAssets();
-        Debug.Log("NITW_STATION_JANITOR_ENTRY_VERIFIED states="+states.Count+" clips="+clips.Count+" sprites="+sprites.Count+" curves="+curveCount);
+        Debug.Log("NITW_STATION_JANITOR_ENTRY_VERIFIED states="+stateCount+" layers="+source.layers.Length+" clips="+clips.Count+" sprites="+sprites.Count+" curves="+curveCount);
         return bridge;
     }
 }

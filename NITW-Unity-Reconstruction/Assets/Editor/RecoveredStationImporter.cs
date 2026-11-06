@@ -92,6 +92,14 @@ public static class RecoveredStationImporter {
         var narration=stage.gameObject.AddComponent<RecoveredStationNarration>();
         narration.station=stage;narration.player=player;narration.view=dialogueView;narration.janitor=janitor;
         narration.programAsset=AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Resources/RecoveredStationEntry/Program.json");
+        var conversation=stage.gameObject.AddComponent<RecoveredJanitorConversation>();
+        conversation.programAsset=AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Resources/RecoveredJanitorDialogue/Program.json");
+        conversation.interactionAsset=AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Resources/RecoveredJanitorDialogue/Interaction.json");
+        conversation.station=stage;conversation.player=player;conversation.entry=narration;conversation.janitor=janitor;
+        conversation.maeBubble=dialogueView;conversation.janitorBubble=RecoveredStationDialogueImporter.AttachSpeaker(nodes,"Janitor");
+        conversation.choices=RecoveredStationDialogueImporter.AttachChoices(nodes,dialogueView);
+        conversation.indicator=nodes[88].transform;conversation.indicatorSprite=nodes[15].transform;conversation.maeHead=nodes[200].transform;
+        conversation.indicatorFrames=RecoveredJanitorInteractionImporter.LoadPrompt();
         if(nodes.Count!=273||spriteCount!=174||meshCount!=4)throw new Exception("Station source counts differ.");
         Debug.Log("NITW_STATION_SOURCE_VERIFIED nodes="+nodes.Count+" sprites="+spriteCount+" meshes="+meshCount+" camera="+data.camera);
         AssetDatabase.SaveAssets();

@@ -4,7 +4,7 @@ Static metadata and texture decoding only; no shipped managed code is executed.
 The generated resources contain original game artwork and must remain local.
 """
 import os
-import hashlib,json,pathlib
+import hashlib,json,pathlib,struct
 import UnityPy
 from UnityPy.helpers.TypeTreeGenerator import TypeTreeGenerator
 from UnityPy.helpers.Tpk import get_typetree_node
@@ -45,7 +45,36 @@ source=dict(assemblySha256=hashlib.sha256((ROOT/'Managed/Assembly-CSharp.dll').r
  prefabSha256=hashlib.sha256((ROOT/'sharedassets0.assets').read_bytes()).hexdigest(),
  fontComponent=797,speechBubble=25335,spriteText=27509,speechBubbleMesh=25361,
  staticOnly=True)
+speakers=[]
+for name,cid,locator in [('Mae',876,875),('Janitor',839,857)]:
+ c=fields(si[cid]);l=fields(si[locator])
+ speakers.append(dict(name=name,root=c['m_GameObject']['m_PathID'],
+  headTracker=si[c['headTracker']['m_PathID']].read().m_GameObject.m_PathID if c['headTracker']['m_PathID'] else 0,
+  locator=l['m_GameObject']['m_PathID'],headPosition=c['headPosition'],detectOffset=l['detectOffset'],
+  referenceOffset=l['referenceOffset'],detectRadius=l['detectRadius'],bubbleScale=c['bubbleScale'],
+  bubbleOpenDistance=c['bubbleOpenDistance'],bubbleOpenDir=c['bubbleOpenDir'],headRadius=c['headRadius']))
+# TextEmoticons has an inherited-type mismatch in the typetree backend. Decode
+# its complete local serialized payload instead of inventing smiley semantics.
+raw=si[792].get_raw_data();pos=32
+def integer():
+ global pos
+ value=struct.unpack_from('<i',raw,pos)[0];pos+=4;return value
+def string():
+ global pos
+ n=integer();value=raw[pos:pos+n].decode('utf-8');pos=(pos+n+3)&~3;return value
+emoticons=[]
+for _ in range(integer()):
+ token=string();triggers=[string() for _ in range(integer())]
+ values=[dict(name=string(),value=integer()) for _ in range(integer())]
+ emoticons.append(dict(emoticon=token,triggers=triggers,intVars=values))
+assert pos==len(raw) and len(emoticons)==24
+dot=fields(pi[25334]);dot_go=pi[dot['m_GameObject']['m_PathID']].read()
+dot_transform=next(pi[c.component.m_PathID].read_typetree() for c in dot_go.m_Component if pi[c.component.m_PathID].type.name=='Transform')
 out=dict(source=source,characters=chars,sprites=list(sprites.values()),stemSprite=sprite(6733),
+ speakers=speakers,emoticons=emoticons,choiceArrowSprite=sprite(11075),choiceDotSprite=sprite(9430),
+ choiceArrowScale=dict(x=1,y=.5,z=1),choiceDotScale=dot_transform['m_LocalScale'],
+ choiceArrowInset=.16,choiceDotSpacing=.125,choiceDotYInset=.075,choiceTweenTime=.2,
+ choiceAppearEvent='event:/ui/speech_bubble_choice_appear',choiceScrollEvent='event:/ui/speech_bubble_choice_scroll',
  upperCaseOnly=bool(font['upperCaseOnly']),spacingMultiplier=font['spacingMultiplier'],xPadding=font['xPadding'],
  spaceWidth=font['spaceWidth'],lineHeight=font['lineHeight'],textScale=text['scale'],width=text['width'],
  fillPadding=text['fillPadding'],letterTweenTime=text['letterTweenTime'],letterWaitTime=text['letterWaitTime'],
@@ -64,7 +93,7 @@ out=dict(source=source,characters=chars,sprites=list(sprites.values()),stemSprit
  openTime=.175,glyphFrameTime=1/6,changeFadeMin=.05,changeFadeTime=.1,changeScrollDelay=.075,resizeTime=.15,
  closeTextDelay=.0625,closeFadeMin=.1575,closeFadeMax=.175,
  sortingLayer=-1016395719,glyphOrder=10,meshOrder=-10,stemOrder=0,
- scope='Main speech bubble presentation for the five Mae EnterLevel lines; original artwork stays local.')
+ scope='Main speech bubble and Janitor/choice presentation; original artwork stays local.')
 # sprite(6733) was appended while evaluating the dictionary.
 out['sprites']=list(sprites.values())
 (DEST/'Presentation.json').write_text(json.dumps(out,indent=2)+'\n')

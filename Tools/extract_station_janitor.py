@@ -1,4 +1,4 @@
-"""Decode Janitor's entry-only shipped Unity 5.6 streamed/constant animation curves without executing target code."""
+"""Decode Janitor's entry/conversation shipped Unity 5.6 streamed/constant animation curves without executing target code."""
 import os
 import collections,hashlib,json,math,pathlib,struct,zlib
 import UnityPy
@@ -11,16 +11,30 @@ def walk(t,p):
  for q in t.m_Children:
   ch=ts[q.m_PathID];walk(ch,p+'/'+gos[ch.m_GameObject.m_PathID].m_Name if p else gos[ch.m_GameObject.m_PathID].m_Name)
 walk(next(t for t in ts.values() if t.m_GameObject.m_PathID==266),'')
-c=idx[553].read_typetree();tos=dict(c['m_TOS']);machine=c['m_Controller']['m_StateMachineArray'][0]['data'];selected=[0,1,4,5]
-states=[];clipids=set();unknown=[];sprites={}
-for si in selected:
- s=machine['m_StateConstantArray'][si]['data'];bi=s['m_BlendTreeConstantArray'][0]['data']['m_NodeArray'][0]['data']['m_ClipID'];ci=c['m_AnimationClips'][bi]['m_PathID'];clipids.add(ci)
- tr=[]
- for v in s['m_TransitionConstantArray']:
-  t=v['data'];destination=t['m_DestinationState']
-  if destination not in selected:continue
-  tr.append(dict(destination=tos[machine['m_StateConstantArray'][destination]['data']['m_NameID']],duration=t['m_TransitionDuration'],offset=t['m_TransitionOffset'],exitTime=t['m_ExitTime'],hasExitTime=t['m_HasExitTime'],fixedDuration=t['m_HasFixedDuration'],canTransitionToSelf=t['m_CanTransitionToSelf'],conditions=[dict(mode=v['data']['m_ConditionMode'],parameter=tos[v['data']['m_EventID']],threshold=v['data']['m_EventThreshold']) for v in t['m_ConditionConstantArray']]))
- states.append(dict(index=si,name=tos[s['m_NameID']],clip=ci,speed=s['m_Speed'],loop=s['m_Loop'],transitions=tr))
+c=idx[553].read_typetree();tos=dict(c['m_TOS']);controller=c['m_Controller']
+# Only states required by entry, drilling/relax, neutral blink and speech.
+# The two empty facial defaults are significant: leaving Talk/Blink restores
+# the controller defaults rather than freezing the final frame.
+selections={0:[0,1,4,5,6,7,8],1:[0,1],2:[0,1]}
+layers=[];clipids=set();unknown=[];sprites={}
+for mi,selected in selections.items():
+ machine=controller['m_StateMachineArray'][mi]['data'];layer=controller['m_LayerArray'][mi]['data'];states=[]
+ for si in selected:
+  st=machine['m_StateConstantArray'][si]['data'];trees=st['m_BlendTreeConstantArray'];ci=0
+  if trees:
+   bi=trees[0]['data']['m_NodeArray'][0]['data']['m_ClipID'];ci=c['m_AnimationClips'][bi]['m_PathID'];clipids.add(ci)
+  transitions=[]
+  for v in st['m_TransitionConstantArray']:
+   t=v['data'];destination=t['m_DestinationState']
+   if destination not in selected:continue
+   transitions.append(dict(destination=tos[machine['m_StateConstantArray'][destination]['data']['m_NameID']],duration=t['m_TransitionDuration'],offset=t['m_TransitionOffset'],exitTime=t['m_ExitTime'],hasExitTime=t['m_HasExitTime'],fixedDuration=t['m_HasFixedDuration'],canTransitionToSelf=t['m_CanTransitionToSelf'],interruptionSource=t['m_InterruptionSource'],orderedInterruption=t['m_OrderedInterruption'],conditions=[dict(mode=v['data']['m_ConditionMode'],parameter=tos[v['data']['m_EventID']],threshold=v['data']['m_EventThreshold']) for v in t['m_ConditionConstantArray']]))
+  states.append(dict(index=si,name=tos[st['m_NameID']],clip=ci,speed=st['m_Speed'],loop=st['m_Loop'],cycleOffset=st['m_CycleOffset'],iKOnFeet=st['m_IKOnFeet'],mirror=st['m_Mirror'],writeDefaultValues=st['m_WriteDefaultValues'],transitions=transitions))
+ layers.append(dict(name=tos[layer['m_Binding']],defaultState=tos[machine['m_StateConstantArray'][machine['m_DefaultState']]['data']['m_NameID']],defaultWeight=layer['m_DefaultWeight'],blendingMode=layer['(int&)m_LayerBlendingMode'],iKPass=layer['m_IKPass'],states=states))
+# All named parameters are declarations, not support for their omitted actions.
+values=controller['m_DefaultValues']['data'];parameters=[]
+for v in controller['m_Values']['data']['m_ValueArray']:
+ default=values['m_IntValues'][v['m_Index']] if v['m_Type']==3 else values['m_BoolValues'][v['m_Index']]
+ parameters.append(dict(name=tos[v['m_ID']],type=v['m_Type'],defaultInt=int(default) if v['m_Type']==3 else 0,defaultBool=bool(default) if v['m_Type']==4 else False))
 def sprite(id):
  if id in sprites:return
  s=idx[id].read();im=s.m_RD.texture.read().image
@@ -64,6 +78,6 @@ for id in sorted(clipids):
   offset+=width
  assert offset==sc['curveCount']+len(constant),(id,offset,sc['curveCount'],len(constant))
  clips.append(dict(id=id,name=t['m_Name'],length=t['m_MuscleClip']['m_StopTime'],sampleRate=t['m_SampleRate'],loop=t['m_MuscleClip']['m_LoopTime'],floatCurves=fc,objectCurves=oc,events=[dict(time=v['time'],function=v['functionName']) for v in t['m_Events']]))
-out=dict(source=str(ROOT/'sharedassets11.assets'),sha256=hashlib.sha256((ROOT/'sharedassets11.assets').read_bytes()).hexdigest(),controllerPathId=553,animatorGameObjectId=266,states=states,clips=clips,sprites=list(sprites.values()),unboundPaths=unknown,drillEvent='event:/bus_station/janitor_drill',drillEmitter=82,clothEmitter=89,drillFade=.1)
+out=dict(source=str(ROOT/'sharedassets11.assets'),sha256=hashlib.sha256((ROOT/'sharedassets11.assets').read_bytes()).hexdigest(),controllerPathId=553,animatorGameObjectId=266,states=layers[0]['states'],layers=layers,parameters=parameters,clips=clips,sprites=list(sprites.values()),unboundPaths=unknown,drillEvent='event:/bus_station/janitor_drill',drillEmitter=82,drillIdleEvent='event:/bus_station/janitor_drill_idle',drillIdleEmitter=184,clothEmitter=89,drillFade=.1,minBlinkDelay=2.,maxBlinkDelay=6.,talkAnimType=1)
 (DEST/'Animation.json').write_text(json.dumps(out,indent=2)+'\n')
-print('Recovered Janitor entry:',len(states),'states',len(clips),'clips',len(sprites),'sprites',sum(len(x['floatCurves'])+len(x['objectCurves']) for x in clips),'bindings; unbound',unknown)
+print('Recovered Janitor entry/conversation:',sum(len(l['states']) for l in layers),'states in',len(layers),'layers',len(clips),'clips',len(sprites),'sprites',sum(len(x['floatCurves'])+len(x['objectCurves']) for x in clips),'bindings; unbound',unknown)
