@@ -71,7 +71,7 @@
     },
     {
       "path": "NITW-Unity-Reconstruction/Assets/Editor/RecoveredStationDialogueImporter.cs",
-      "sha256": "1c303aa3196d4a320e77cea3cefbbf0331627be852befecca352a9ac75818ba5",
+      "sha256": "a33b18ef661538679c2f1c868f391d784df4b7e9c6bd01c44ab154165988d63b",
       "review": "authored Unity import/build/verification adapter",
       "changes": [],
       "mode": "100644"
@@ -199,7 +199,7 @@
     },
     {
       "path": "NITW-Unity-Reconstruction/Assets/Scripts/RecoveredStationNarrationCheck.cs",
-      "sha256": "7116fdcb240d06d327bd458919dce21b0a3150b0797312e17b23c986031888aa",
+      "sha256": "b5b265abc4c15c28ed309d85b2576b9e3218984428df191c359fd3aee3c90d81",
       "review": "authored schema, interop, text renderer or diagnostic",
       "changes": [],
       "mode": "100644"

@@ -40,6 +40,7 @@ public static class RecoveredStationDialogueImporter {
         var go=new GameObject("Recovered "+speakerName+" speech bubble");
         var view=go.AddComponent<RecoveredStationDialogueView>();
         view.presentation=resource;view.sprites=sprites;
+        AttachThai(view);
         var speaker=Array.Find(data.speakers,s=>s.name==speakerName);
         if(speaker==null)throw new Exception("Unknown recovered station speaker "+speakerName);
         view.SpeakerName=speakerName;view.speakerRoot=nodes[speaker.root].transform;
@@ -48,6 +49,25 @@ public static class RecoveredStationDialogueImporter {
         view.sceneCamera=nodes[128].GetComponent<Camera>();
         Debug.Log("NITW_STATION_DIALOGUE_PRESENTATION_VERIFIED glyphs="+data.characters.Length+" sprites="+sprites.Length+" head="+data.headTrackerGameObject);
         return view;
+    }
+    // Optional Thai speech data from prepare_station_dialogue_th.py. The atlas
+    // is mipmapped with a negative bias so thin marks survive minification.
+    const string ThaiFolder="Assets/Resources/RecoveredStationThai/";
+    private static void AttachThai(RecoveredStationDialogueView view) {
+        var data=AssetDatabase.LoadAssetAtPath<TextAsset>(ThaiFolder+"StationThai.json");
+        if(data==null){Debug.LogWarning("NITW_STATION_THAI_MISSING English speech only");return;}
+        var importer=(TextureImporter)AssetImporter.GetAtPath(ThaiFolder+"ThaiGlyphs.png");
+        if(importer.userData!="RecoveredStationThai:v2") {
+            importer.textureType=TextureImporterType.Default;importer.alphaSource=TextureImporterAlphaSource.FromInput;
+            importer.alphaIsTransparency=true;importer.mipmapEnabled=true;importer.sRGBTexture=true;
+            importer.textureCompression=TextureImporterCompression.Uncompressed;importer.npotScale=TextureImporterNPOTScale.None;
+            importer.maxTextureSize=2048;importer.wrapMode=TextureWrapMode.Clamp;importer.filterMode=FilterMode.Trilinear;
+            importer.mipMapBias=-.5f;importer.userData="RecoveredStationThai:v2";importer.SaveAndReimport();
+        }
+        view.thaiAsset=data;view.thaiAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>(ThaiFolder+"ThaiGlyphs.png");
+        var thai=JsonUtility.FromJson<RecoveredStationThaiData>(data.text);
+        if(view.thaiAtlas==null||thai.runs.Length==0||thai.entries.Length==0)throw new Exception("Invalid station Thai speech data.");
+        Debug.Log("NITW_STATION_THAI_VERIFIED entries="+thai.entries.Length+" runs="+thai.runs.Length+" sprites="+thai.sprites.Length+" font="+thai.fontName);
     }
     public static RecoveredStationChoiceView AttachChoices(Dictionary<int,GameObject> nodes,RecoveredStationDialogueView bubble) {
         var source=JsonUtility.FromJson<RecoveredStationDialogueData>(bubble.presentation.text);

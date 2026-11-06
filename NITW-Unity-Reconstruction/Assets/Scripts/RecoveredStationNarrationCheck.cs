@@ -97,7 +97,7 @@ public sealed class RecoveredStationNarrationCheck : MonoBehaviour {
             Check(narration.CurrentLineId==ids[line],"entry retains original line identity "+line);
             if(narration.Completed||narration.LineIndex!=line)break;
             report.displayedLineIds.Add(narration.CurrentLineId);
-            Check(narration.CurrentText==program.lines[line].text&&view.CurrentText==program.lines[line].text,
+            Check(narration.CurrentText==program.lines[line].text&&view.SourceText==program.lines[line].text,
                 "view receives the exact original entry text "+line);
             Check(view.Visible,"speech bubble is visible for source line "+line);
             if(line==0&&narration.Typing) {
@@ -127,7 +127,10 @@ public sealed class RecoveredStationNarrationCheck : MonoBehaviour {
             }
             Check(narration.AwaitingAdvance&&!narration.Typing,"line waits for confirmation after typing "+line);
             Check(view.CanAdvance&&view.Visible,"source bubble enters its ready state "+line);
-            string expected=view.Data.upperCaseOnly?program.lines[line].text.ToUpperInvariant():program.lines[line].text;
+            Check(view.Localized==(RecoveredStationDialogueView.ThaiEnabled&&view.Translation(ids[line])!=null)&&
+                view.CurrentText==(view.Localized?view.Translation(ids[line]):program.lines[line].text),
+                "entry line uses the selected language for its original ID "+line);
+            string expected=view.ExpectedRendered(view.CurrentText);
             Check(WithoutWhitespace(view.RenderedText)==WithoutWhitespace(expected),
                 "rendered text preserves original punctuation and literal emphasis marks "+line);
             Check(view.VisibleGlyphCount==view.TotalGlyphCount&&view.VisibleGlyphCount>0,
@@ -155,6 +158,7 @@ public sealed class RecoveredStationNarrationCheck : MonoBehaviour {
                 Check(station.ActiveLoopCount>0,"source janitor drill loop is active during narration");
             }
             if(line==0||line==2||line==4)Capture("station-narration-"+(line+1)+".png");
+            Capture("line-entry-"+(line+1)+"-"+ids[line]+".png");
             player.SetDiagnosticInput(0,false,false);
             narration.Advance();yield return null;
         }
@@ -199,11 +203,16 @@ public sealed class RecoveredStationNarrationCheck : MonoBehaviour {
     private static string WithoutWhitespace(string text) {
         return new string(Array.FindAll((text??"").ToCharArray(),c=>!char.IsWhiteSpace(c)));
     }
+    // Optional -capture-scale N renders review captures at N x 960x540.
+    private static int CaptureScale() {
+        var args=Environment.GetCommandLineArgs();int i=Array.IndexOf(args,"-capture-scale");
+        return i>=0&&i+1<args.Length&&int.TryParse(args[i+1],out var k)&&k>=1&&k<=4?k:1;
+    }
     private void Capture(string name) {
         var camera=station.sceneCamera;var old=camera.targetTexture;var rect=camera.rect;
-        var target=new RenderTexture(960,540,24);camera.rect=new Rect(0,0,1,1);camera.targetTexture=target;camera.Render();
+        int k=CaptureScale();var target=new RenderTexture(960*k,540*k,24);camera.rect=new Rect(0,0,1,1);camera.targetTexture=target;camera.Render();
         var active=RenderTexture.active;RenderTexture.active=target;
-        var image=new Texture2D(960,540,TextureFormat.RGB24,false);image.ReadPixels(new Rect(0,0,960,540),0,0);image.Apply();
+        var image=new Texture2D(960*k,540*k,TextureFormat.RGB24,false);image.ReadPixels(new Rect(0,0,960*k,540*k),0,0);image.Apply();
         File.WriteAllBytes(Path.Combine(output,name),image.EncodeToPNG());
         RenderTexture.active=active;camera.targetTexture=old;camera.rect=rect;Destroy(image);Destroy(target);
     }
