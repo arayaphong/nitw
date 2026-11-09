@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using UnityEngine;
 
 namespace NITWThai.Runtime {
@@ -15,8 +16,11 @@ namespace NITWThai.Runtime {
         sealed class Glyph { public Rect rect; public Vector2 pivot; public float width; }
 
         static bool tried;
-        static Dictionary<string, string> strings;
-        static HashSet<string> poemKeys;
+        sealed class Entry { public string display, original; public bool poem; }
+        // Usually one entry per key; a few line IDs are shared by two Yarn
+        // files and carry the original text to pick the right one.
+        static Dictionary<string, List<Entry>> strings;
+        static FieldInfo programStrings;
         static Dictionary<char, Glyph> glyphs;
         static readonly Dictionary<char, SpriteFont.CharData> charDatas = new Dictionary<char, SpriteFont.CharData>();
         static readonly HashSet<int> adjustedFonts = new HashSet<int>();
@@ -57,15 +61,14 @@ namespace NITWThai.Runtime {
                         width = float.Parse(f[7], inv),
                     };
                 }
-                var s = new Dictionary<string, string>();
-                var poem = new HashSet<string>();
+                var s = new Dictionary<string, List<Entry>>();
                 foreach (string line in File.ReadAllLines(Path.Combine(dir, "strings.tsv"), System.Text.Encoding.UTF8)) {
                     string[] f = line.Split('\t');
                     if (f.Length < 2) continue;
-                    s[f[0]] = f[1];
-                    if (f.Length > 2 && f[2] == "poem") poem.Add(f[0]);
+                    List<Entry> list;
+                    if (!s.TryGetValue(f[0], out list)) s[f[0]] = list = new List<Entry>();
+                    list.Add(new Entry { display = f[1], poem = f.Length > 2 && f[2] == "poem", original = f.Length > 3 ? f[3] : "" });
                 }
-                poemKeys = poem;
                 atlas = new Texture2D(2, 2, TextureFormat.RGBA32, true);
                 if (!atlas.LoadImage(File.ReadAllBytes(Path.Combine(dir, "glyphs.png")))) throw new IOException("glyphs.png did not decode");
                 atlas.filterMode = FilterMode.Trilinear;
@@ -80,13 +83,29 @@ namespace NITWThai.Runtime {
             }
         }
 
-        public static string Translate(string key, out bool poem) {
+        public static string Translate(object program, string key, out bool poem) {
             poem = false;
             if (!Enabled || key == null) return null;
-            string value;
-            if (!strings.TryGetValue(key, out value)) return null;
-            poem = poemKeys.Contains(key);
-            return value;
+            List<Entry> list;
+            if (!strings.TryGetValue(key, out list)) return null;
+            Entry pick = null;
+            if (list.Count == 1 && list[0].original.Length == 0) pick = list[0];
+            else {
+                string original = OriginalString(program, key);
+                foreach (var e in list) if (original != null && e.original == original.Trim()) pick = e;
+                if (pick == null) { Hooks.Log("ambiguous " + key + " original '" + original + "' not matched"); return null; }
+            }
+            poem = pick.poem;
+            return pick.display;
+        }
+
+        // Yarn.Program.strings[key]: the English the game would show.
+        static string OriginalString(object program, string key) {
+            if (program == null) return null;
+            if (programStrings == null)
+                programStrings = program.GetType().GetField("strings", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var table = programStrings == null ? null : programStrings.GetValue(program) as System.Collections.IDictionary;
+            return table != null && table.Contains(key) ? table[key] as string : null;
         }
 
         public static SpriteFont.CharData Get(SpriteFont font, char c) {

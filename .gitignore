@@ -85,3 +85,6 @@
 !/ThaiMod/src/Runtime/ThaiPoemFont.cs
 !/ThaiMod/src/Runtime/PoemLineFix.cs
 !/docs/thai-mod-phase1.md
+!/Tools/extract_thai_worklist.py
+!/Tools/thai_coverage.py
+!/docs/thai-mod-phase2.md

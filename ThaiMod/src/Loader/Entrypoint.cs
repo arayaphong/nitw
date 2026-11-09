@@ -58,7 +58,7 @@ namespace Doorstop {
         // override: r = Hook(args); if r != null return r; else run the method.
         // Arguments: "this" (passed as object) or "argN" (Nth parameter).
         static readonly string[][] Hooks = {
-            new[] { "Yarn.Program", "GetString", "OnGetString", "override", "arg0" },
+            new[] { "Yarn.Program", "GetString", "OnGetString", "override", "this,arg0" },
             new[] { "SpriteFont", "GetCharData", "OnGetCharData", "override", "this,arg0" },
             new[] { "SpriteText", "SetText", "OnSetText", "observe", "arg0" },
             // Known-safe set only. Patching Global.LoadLevel, or adding

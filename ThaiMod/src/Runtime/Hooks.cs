@@ -28,11 +28,11 @@ namespace NITWThai.Runtime {
         public static void Log(string message) { Write("log", message); }
 
         // Yarn.Program.GetString(key): Thai display string, or null for original.
-        public static string OnGetString(string key) {
+        public static string OnGetString(object program, string key) {
             try {
                 if (key != null && seenKeys.Add(key)) Write("key", key);
                 bool poem;
-                string thai = ThaiFont.Translate(key, out poem);
+                string thai = ThaiFont.Translate(program, key, out poem);
                 // The game fetches a whole node's lines when it starts, before
                 // the poem coroutine clones its TextMesh prefab.
                 if (poem) ThaiPoemFont.ApplyToScene();

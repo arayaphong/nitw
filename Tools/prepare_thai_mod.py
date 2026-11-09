@@ -8,8 +8,15 @@ SpriteText only wraps at spaces, lines are broken offline (ICU line-break
 opportunities + a keep-together list, game width metrics) with '|' and
 spaces inside Thai become a non-breaking PUA space.
 
+Inputs: every translation work file ThaiMod/translations/<yarn>.json (see
+Tools/extract_thai_worklist.py; lines with a non-empty "th" are built) and
+the original Yarn in ThaiMod/source/yarn/ for speaker prefixes.
+
 Outputs (local only; they contain translated narrative text):
-  ThaiMod/data/strings.tsv   line:<id> \t display string \t bubble|poem
+  ThaiMod/data/strings.tsv   line:<id> \t display \t bubble|poem \t original
+                             (original English only for IDs that two Yarn
+                             files share; the runtime picks by original text)
+  ThaiMod/reports/thai_build.json  errors (skipped lines) and overflows
   ThaiMod/data/glyphs.png    cluster atlas (white + alpha)
   ThaiMod/data/glyphs.tsv    codepoint, rect, pivot, CharData width, text
   ThaiMod/data/meta.tsv      key \t value (pixelsPerUnit, lineHeight, ...)
@@ -27,12 +34,9 @@ from PIL import Image
 
 WORK = pathlib.Path(__file__).resolve().parents[1]
 PRESENTATION = WORK / 'NITW-Unity-Reconstruction/Assets/Resources/RecoveredStationDialogue/Presentation.json'
-# (translation file, original Yarn source, kind). The Yarn source supplies the
-# speaker prefix ("Mae: ") that the game keeps inside each line's text.
-SOURCES = [
-    (WORK / 'Tools/station_dialogue_th.json', WORK / 'research/bus-station/janitor-dialogue/BusStation.yarn.txt', 'bubble'),
-    (WORK / 'Tools/intro_poem_th.json', WORK / 'NITW-Unity-Reconstruction/Assets/Resources/RecoveredPoem/IntroPoem.yarn.txt', 'poem'),
-]
+TRANS = WORK / 'ThaiMod/translations'   # work files (one per Yarn file)
+YARN = WORK / 'ThaiMod/source/yarn'      # original Yarn: speaker prefix and original strings
+REPORTS = WORK / 'ThaiMod/reports'
 POEM_FONT = pathlib.Path.home() / '.local/share/fonts/TH_FONTs/Google/TrueType/Noto Serif Thai/Noto_Serif_Thai_Regular.ttf'
 POEM_PIXELS = 64        # TextMesh custom font: world = px * characterSize(.04) * .1
 OUT = WORK / 'ThaiMod/data'
@@ -146,12 +150,18 @@ def protected_spans(text):
             spans.append((i, i + len(e)))
     return sorted(spans)
 
-def convert(text, keep, width_limit):
+def convert(text, keep, width_limit, no_break_after=()):
     # 1. tokens: ('raw', s) protected, or ('t', cluster/char, advance, break_before, kind)
     breaks = icu_breaks(text)
     for word in keep:
         for m in re.finditer(re.escape(word), text):
             breaks -= set(range(m.start() + 1, m.end())); breaks |= {m.start(), m.end()}
+    # Words that bind to what follows (negation, classifiers): no break after
+    # them unless a space follows.
+    for word in no_break_after:
+        for m in re.finditer(re.escape(word), text):
+            if m.end() < len(text) and text[m.end()] != ' ':
+                breaks.discard(m.end())
     prot = protected_spans(text)
     tokens, i = [], 0
     in_prot = lambda k: next((s for s in prot if s[0] <= k < s[1]), None)
@@ -172,7 +182,8 @@ def convert(text, keep, width_limit):
                 tokens.append(('t', code_for(cl), render(cl)['advance'], bb, 'thai'))
             else:
                 ch = cl.upper() if pres['upperCaseOnly'] else cl
-                assert ch in latin, f'no game glyph for {cl!r} in {text!r}'
+                if ch not in latin:
+                    raise ValueError(f'no game glyph for {cl!r}')
                 tokens.append(('t', cl, latin[ch], bb, 'latin'))
             k += len(cl)
         i = j
@@ -198,6 +209,8 @@ def convert(text, keep, width_limit):
     rows = wrap(width_limit)
     if len(rows) > 3:
         rows = wrap(4.5)
+    if len(rows) > 3:
+        overflow.append(len(rows))
     cut = set(rows[:-1])                     # break before these visible indices
     # 3. emit: '|' at breaks (dropping spaces there), Thai spaces -> THAI_SPACE
     out, v = [], 0
@@ -225,7 +238,7 @@ def convert(text, keep, width_limit):
 def speaker_prefixes(yarn_path):
     """line id -> text before the spoken words ("Mae: ", "Janitor:"), as authored."""
     out = {}
-    for line in yarn_path.read_text().splitlines():
+    for line in yarn_path.read_text(encoding='utf-8').splitlines():
         m = re.search(r'#line:([0-9a-f]+)', line)
         if not m:
             continue
@@ -237,23 +250,65 @@ def speaker_prefixes(yarn_path):
         out[m.group(1)] = p.group(1) if p else ''
     return out
 
-strings, report, poem_texts = [], [], []
-for src, yarn, kind in SOURCES:
-    data = json.loads(src.read_text())
-    keep = data.get('keepTogether', [])
-    prefixes = speaker_prefixes(yarn)
-    for e in data['entries']:
-        assert e['id'] in prefixes, f"{e['id']} not found in {yarn.name}"
-        if kind == 'bubble':
-            m = re.search(r'\{width=([0-9.]+)\}', e['text'])
-            limit = float(m.group(1)) if m else pres['width']
-            display, nrows = convert(e['text'], keep, limit)
-            report.append(dict(id=e['id'], rows=nrows))
-        else:
-            # Poem TextMesh: no wrapping; '|' keeps the poem's own extra lines.
-            display = ''.join(code_for(cl) if is_thai(cl[0]) else cl for cl in clusters_of(e['text']))
-            poem_texts.append(e['text'])
-        strings.append(('line:' + e['id'], prefixes[e['id']] + display, kind))
+def original_strings(yarn_path):
+    """line id -> the string the game's Program holds for it (before #line)."""
+    out = {}
+    for line in yarn_path.read_text(encoding='utf-8').splitlines():
+        m = re.search(r'#line:([0-9a-f]+)', line)
+        if not m:
+            continue
+        text = line[:m.start()].strip()
+        if text.startswith('[['):
+            o = re.match(r'\[\[(.*?)\|', text); text = o.group(1) if o else text
+        elif text.startswith('->'):
+            text = re.sub(r'(\s*<<[^>]*>>)+\s*$', '', text[2:])
+        out[m.group(1)] = text.strip()
+    return out
+
+def tokens_of(text):
+    """Markup and emoticons the game parses; a translation must keep them."""
+    return sorted(text[a:b] for a, b in protected_spans(text))
+
+keep = json.loads((TRANS / 'keep_together.json').read_text(encoding='utf-8'))
+nba_path = TRANS / 'no_break_after.json'
+no_break_after = json.loads(nba_path.read_text(encoding='utf-8')) if nba_path.exists() else []
+strings, poem_texts, errors, overflows = [], [], [], []
+overflow = []
+for wf in sorted(TRANS.glob('*.json')):
+    if wf.name.startswith('_') or wf.name in ('keep_together.json', 'no_break_after.json'):
+        continue
+    data = json.loads(wf.read_text(encoding='utf-8'))
+    kind, yarn = data['kind'], YARN / data['file']
+    prefixes, originals = speaker_prefixes(yarn), original_strings(yarn)
+    for e in data['lines']:
+        th = (e.get('th') or '').strip()
+        if not th:
+            continue
+        where = f"{data['file']}#{e['id']}"
+        if tokens_of(th) != tokens_of(e['en']):
+            errors.append(dict(line=where, error=f"markup/emoticons differ: en {tokens_of(e['en'])} th {tokens_of(th)}")); continue
+        try:
+            if kind == 'bubble':
+                m = re.search(r'\{width=([0-9.]+)\}', th)
+                limit = float(m.group(1)) if m else pres['width']
+                overflow.clear()
+                display, nrows = convert(th, keep, limit, no_break_after)
+                if overflow:
+                    overflow.clear()
+                    try:
+                        en_rows = convert(e['en'], [], limit)[1]   # same metrics, original text
+                    except ValueError:
+                        en_rows = None
+                    overflow.clear()
+                    overflows.append(dict(line=where, rows=nrows, english_rows=en_rows))
+            else:
+                # Poem TextMesh: no wrapping; '|' keeps the poem's own extra lines.
+                display = ''.join(code_for(cl) if is_thai(cl[0]) else cl for cl in clusters_of(th))
+                poem_texts.append(th)
+        except (ValueError, AssertionError) as x:
+            errors.append(dict(line=where, error=str(x))); continue
+        original = originals[e['id']] if e.get('shared_id') else ''
+        strings.append(('line:' + e['id'], prefixes[e['id']] + display, kind, original))
 
 # --- poem font (TextMesh custom font, Noto Serif Thai) -------------------------
 pface = freetype.Face(str(POEM_FONT)); pface.set_pixel_sizes(0, POEM_PIXELS)
@@ -326,13 +381,15 @@ patlas.save(OUT / 'poem_glyphs.png')
 items = sorted(codes.items(), key=lambda kv: kv[1])
 for cl, _ in items:
     render(cl)          # poem-only clusters also get bubble art (one shared code table)
-W, x, y, row = 512, PAD, PAD, 0
-place = {}
-for cl, _ in items:
-    im = cluster_art[cl]['image']
-    if x + im.width + PAD > W:
-        x = PAD; y += row + PAD; row = 0
-    place[cl] = (x, y); x += im.width + PAD; row = max(row, im.height)
+for W in (512, 1024, 2048, 4096):        # widen until the atlas is at most 4096 tall
+    x, y, row, place = PAD, PAD, 0, {}
+    for cl, _ in items:
+        im = cluster_art[cl]['image']
+        if x + im.width + PAD > W:
+            x = PAD; y += row + PAD; row = 0
+        place[cl] = (x, y); x += im.width + PAD; row = max(row, im.height)
+    if y + row + 2 * PAD + 2 <= 4096:
+        break
 space_slot = (x if x + 2 + PAD <= W else PAD, y if x + 2 + PAD <= W else y + row + PAD)
 H = 1
 while H < max(y + row, space_slot[1] + 2) + PAD:
@@ -349,9 +406,13 @@ sx, sy = space_slot
 rows_out.append((ord(THAI_SPACE), sx, H - sy - 2, 2, 2, .5, .5, THAI_SPACE_ADV / (SPACING * SCALE), ' '))
 atlas.save(OUT / 'glyphs.png')
 (OUT / 'glyphs.tsv').write_text(''.join('%d\t%d\t%d\t%d\t%d\t%.6f\t%.6f\t%.6f\t%s\n' % r for r in rows_out), encoding='utf-8')
-(OUT / 'strings.tsv').write_text(''.join(f'{k}\t{v}\t{kind}\n' for k, v, kind in strings), encoding='utf-8')
+(OUT / 'strings.tsv').write_text(''.join(f'{k}\t{v}\t{kind}\t{o}\n' for k, v, kind, o in strings), encoding='utf-8')
+REPORTS.mkdir(parents=True, exist_ok=True)
+(REPORTS / 'thai_build.json').write_text(json.dumps(dict(strings=len(strings), errors=errors, overflows=overflows),
+                                                     ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
 meta = dict(pixelsPerUnit=PPU, lineHeight=LINE_PITCH / SCALE, font='Kanit Medium',
             fontSha256=hashlib.sha256(FONT.read_bytes()).hexdigest(), shaper='HarfBuzz ' + hb.version_string(),
             clusters=len(codes), strings=len(strings), atlas=f'{W}x{H}', poemGlyphs=len(poem_out), poemAtlas=f'512x{PH}')
 (OUT / 'meta.tsv').write_text(''.join(f'{k}\t{v}\n' for k, v in meta.items()), encoding='utf-8')
-print(json.dumps(meta), 'rows>3:', [r for r in report if r['rows'] > 3])
+print(json.dumps(meta))
+print(f'errors (skipped): {len(errors)}  overflows (>3 rows): {len(overflows)}  report: {REPORTS / "thai_build.json"}')

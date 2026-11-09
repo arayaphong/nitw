@@ -13,7 +13,7 @@
       "path": ".gitignore",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "d32e280edb7f7b11bb7f56a3a7aad337f8331ffbbcd21c31fc91d104358e1e72",
+      "sha256": "056dbf01c27e53d7d01d83b64e7f88c41f68589a10575cc9cde42115cde8ccc9",
       "mode": "100644"
     },
     {
@@ -280,14 +280,14 @@
       "review": "authored Thai mod loader, runtime hook or tooling",
       "changes": [],
       "path": "ThaiMod/src/Loader/Entrypoint.cs",
-      "sha256": "a827a94d46b8da25d756adbd698a2606e1a1f40199d4798308cf5155b27505a5",
+      "sha256": "a919663f1c56568e1287c06e984c13dabda5adb5b594902f58f873974f5fa261",
       "mode": "100644"
     },
     {
       "review": "authored Thai mod loader, runtime hook or tooling",
       "changes": [],
       "path": "ThaiMod/src/Runtime/Hooks.cs",
-      "sha256": "6476061a3b7bd24c85f478bf1669318f6a6cf4e0030c978eb4ab9be58c6e09b0",
+      "sha256": "4def30e232d9600830369791b4573f99b5288bb1503c4890f898a98bd92ac36e",
       "mode": "100644"
     },
     {
@@ -301,7 +301,7 @@
       "review": "authored Thai mod loader, runtime hook or tooling",
       "changes": [],
       "path": "ThaiMod/src/Runtime/ThaiFont.cs",
-      "sha256": "684203aefd9b53871796b9260e6f62f8949390a1aec3498524878537f2276439",
+      "sha256": "5eaee3e0285fcd75c095a81d09a998a25675bbd09d7415108f14b9a602175747",
       "mode": "100644"
     },
     {
@@ -409,6 +409,13 @@
       "mode": "100644"
     },
     {
+      "review": "extractor or local inspection tool",
+      "changes": [],
+      "path": "Tools/extract_thai_worklist.py",
+      "sha256": "b9212f22c2ebd09d4584127feb2928c555f4661d60e4c0b26c00c621738eab05",
+      "mode": "100644"
+    },
+    {
       "path": "Tools/extract_title_bloom.py",
       "sha256": "b1c9cdcd398e77c3fb196c3a35a3b9b77c99d02e87dde29c7eb86f9a57105b8c",
       "review": "extractor or local inspection tool",
@@ -473,7 +480,14 @@
       "review": "extractor or local inspection tool",
       "changes": [],
       "path": "Tools/prepare_thai_mod.py",
-      "sha256": "87342972295c096c7fd164d709e2fb1ab733889fc81bb00ac98e113a83bacbbe",
+      "sha256": "38c398ddd6067d8219bd00b8a12c35d6b22b4ad2ebcc3d547f2c664254e64dce",
+      "mode": "100644"
+    },
+    {
+      "review": "extractor or local inspection tool",
+      "changes": [],
+      "path": "Tools/thai_coverage.py",
+      "sha256": "ca637415a419bed594344699744116974733f7caaff9e304d8f0e659e8c1dcce",
       "mode": "100644"
     },
     {
@@ -495,6 +509,13 @@
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
       "sha256": "4f61ee98fc79b9e0212f8e5c594084874a489898036f855ef25d299d704ee947",
+      "mode": "100644"
+    },
+    {
+      "path": "docs/thai-mod-phase2.md",
+      "review": "publication documentation, audit tooling or existing repository license",
+      "changes": [],
+      "sha256": "00eb5679ea54783a7d8741b0a89696d02f35220c17dc8d1cecacb9770c42d2dd",
       "mode": "100644"
     },
     {
