@@ -21,9 +21,11 @@ Outputs (local only; they contain translated narrative text):
   ThaiMod/data/glyphs.tsv    codepoint, rect, pivot, CharData width, text
   ThaiMod/data/meta.tsv      key \t value (pixelsPerUnit, lineHeight, ...)
 """
+import os
 import ctypes
 import hashlib
 import json
+import os
 import pathlib
 import re
 
@@ -33,14 +35,25 @@ import uharfbuzz as hb
 from PIL import Image
 
 WORK = pathlib.Path(__file__).resolve().parents[1]
-PRESENTATION = WORK / 'NITW-Unity-Reconstruction/Assets/Resources/RecoveredStationDialogue/Presentation.json'
+# Game SpriteText/SpriteFont metrics and emoticon table, produced from the
+# installed game by Tools/extract_station_dialogue.py.
+PRESENTATION = pathlib.Path(os.environ.get('NITW_PRESENTATION', str(
+    WORK / 'NITW-Unity-Reconstruction/Assets/Resources/RecoveredStationDialogue/Presentation.json')))
 TRANS = WORK / 'ThaiMod/translations'   # work files (one per Yarn file)
 YARN = WORK / 'ThaiMod/source/yarn'      # original Yarn: speaker prefix and original strings
 REPORTS = WORK / 'ThaiMod/reports'
-POEM_FONT = pathlib.Path.home() / '.local/share/fonts/TH_FONTs/Google/TrueType/Noto Serif Thai/Noto_Serif_Thai_Regular.ttf'
+# Fonts (SIL OFL). Order: $NITW_THAI_FONT / $NITW_THAI_POEM_FONT, then the
+# copies ThaiMod/fetch_deps.sh downloads from google/fonts, then the
+# development machine's installed copies.
+def font_path(env, fetched, installed):
+    if os.environ.get(env):
+        return pathlib.Path(os.environ[env])
+    return fetched if fetched.exists() else installed
+POEM_FONT = font_path('NITW_THAI_POEM_FONT', WORK / 'ThaiMod/fonts/NotoSerifThai.ttf',
+    pathlib.Path.home() / '.local/share/fonts/TH_FONTs/Google/TrueType/Noto Serif Thai/Noto_Serif_Thai_Regular.ttf')
 POEM_PIXELS = 64        # TextMesh custom font: world = px * characterSize(.04) * .1
 OUT = WORK / 'ThaiMod/data'
-FONT = pathlib.Path.home() / '.local/share/fonts/TH_FONTs/Kanit-Medium.ttf'
+FONT = font_path('NITW_THAI_FONT', WORK / 'ThaiMod/fonts/Kanit-Medium.ttf', pathlib.Path.home() / '.local/share/fonts/TH_FONTs/Kanit-Medium.ttf')
 BODY_PIXELS = 32        # rendered consonant body height (ก)
 BODY = .22              # bubble-local consonant body height
 LINE_PITCH = .5         # bubble-local row pitch for Thai (Latin: lineHeight 1 x scale .35)
@@ -49,6 +62,11 @@ PAD = 4
 PUA = 0xE000
 THAI_SPACE = chr(0xF8FF)  # non-breaking space glyph used inside Thai text
 
+for need, hint in ((PRESENTATION, 'run Tools/extract_station_dialogue.py or set NITW_PRESENTATION'),
+                   (FONT, 'set NITW_THAI_FONT to Kanit-Medium.ttf'), (POEM_FONT, 'set NITW_THAI_POEM_FONT to NotoSerifThai-Regular.ttf'),
+                   (TRANS / 'keep_together.json', 'run Tools/extract_thai_worklist.py')):
+    if not need.exists():
+        raise SystemExit(f'missing {need}: {hint}')
 pres = json.loads(PRESENTATION.read_text())
 SCALE = pres['textScale']            # SpriteText.scale
 SPACING = pres['spacingMultiplier']

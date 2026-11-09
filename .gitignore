@@ -88,3 +88,6 @@
 !/Tools/extract_thai_worklist.py
 !/Tools/thai_coverage.py
 !/docs/thai-mod-phase2.md
+!/Tools/extract_game_yarn.py
+!/ThaiMod/fetch_deps.sh
+!/docs/thai-mod-setup.md

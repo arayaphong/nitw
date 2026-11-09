@@ -1,6 +1,7 @@
 #!/bin/sh
 # Build the NITW Thai mod (net35 for the game's Unity 5.6 Mono) with the Roslyn
-# compiler bundled in the Unity editor, and stage it into a game folder.
+# compiler bundled in the Unity editor (set UNITY_EDITOR to its Editor folder).
+# The game folder is read only, for its managed DLLs as compile references.
 # Usage: ./build.sh <game folder containing "Night in the Woods_Data">
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
@@ -19,6 +20,4 @@ cp "$HERE/lib/Mono.Cecil.dll" "$REF/"
 common="-nostdlib -noconfig -optimize -langversion:7.3 -nologo -warn:4 -reference:$REF/mscorlib.dll -reference:$REF/System.dll -reference:$REF/System.Core.dll"
 "$DOTNET" "$CSC" $common -target:library -out:"$OUT/NITWThai.Runtime.dll" -reference:"$REF/UnityEngine.dll" -reference:"$REF/Assembly-CSharp.dll" "$HERE"/src/Runtime/*.cs
 "$DOTNET" "$CSC" $common -target:library -out:"$OUT/NITWThai.Loader.dll" -reference:"$REF/Mono.Cecil.dll" "$HERE"/src/Loader/*.cs
-mkdir -p "$GAME/NITWThai"
-cp "$OUT/NITWThai.Runtime.dll" "$OUT/NITWThai.Loader.dll" "$HERE/lib/Mono.Cecil.dll" "$GAME/NITWThai/"
-echo "staged into $GAME/NITWThai"
+echo "built $OUT/NITWThai.Loader.dll and NITWThai.Runtime.dll (install with ./install.sh)"

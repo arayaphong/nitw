@@ -13,7 +13,7 @@
       "path": ".gitignore",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "056dbf01c27e53d7d01d83b64e7f88c41f68589a10575cc9cde42115cde8ccc9",
+      "sha256": "d304b81f282c9494204abbb401875044fc937f5fa5af1a264f1b5404a502c2e4",
       "mode": "100644"
     },
     {
@@ -266,7 +266,14 @@
       "review": "authored Thai mod loader, runtime hook or tooling",
       "changes": [],
       "path": "ThaiMod/build.sh",
-      "sha256": "356b2101be2761f85503bbb7f190cd42edce48109d855f76452ff03b6eb48325",
+      "sha256": "f88c2bd94bc7587cecf96dea8238272f500644e9e6233bd98ffcf21ce0deff60",
+      "mode": "100755"
+    },
+    {
+      "review": "authored Thai mod loader, runtime hook or tooling",
+      "changes": [],
+      "path": "ThaiMod/fetch_deps.sh",
+      "sha256": "7aa6ab003db29fa4e5f5bbe3b511749bf76a97c84558cac2a804f2585ec2ab11",
       "mode": "100755"
     },
     {
@@ -325,6 +332,15 @@
       "changes": [
         "replace user-specific paths with environment/relative paths"
       ],
+      "mode": "100644"
+    },
+    {
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "path": "Tools/extract_game_yarn.py",
+      "sha256": "fa0d03298d2b7753b97b35e1b19f4466eefa1d338261b8bfbc66c6d2ba1696e7",
       "mode": "100644"
     },
     {
@@ -478,9 +494,11 @@
     },
     {
       "review": "extractor or local inspection tool",
-      "changes": [],
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
       "path": "Tools/prepare_thai_mod.py",
-      "sha256": "38c398ddd6067d8219bd00b8a12c35d6b22b4ad2ebcc3d547f2c664254e64dce",
+      "sha256": "aabc9cfb97583e9932d73fa771c5ed4b5eb68442538df8d15961238420169ce2",
       "mode": "100644"
     },
     {
@@ -523,6 +541,13 @@
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
       "sha256": "290fbfc31735a38a6757ad33127e91003562dc3f8a0037f23b18e2bc8508195f",
+      "mode": "100644"
+    },
+    {
+      "path": "docs/thai-mod-setup.md",
+      "review": "publication documentation, audit tooling or existing repository license",
+      "changes": [],
+      "sha256": "1602869ea00bd7f4a43bd5a8243d160a866b264c01b05b5bc48cd01eb88f0371",
       "mode": "100644"
     },
     {
