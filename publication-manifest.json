@@ -498,7 +498,7 @@
         "replace user-specific paths with environment/relative paths"
       ],
       "path": "Tools/prepare_thai_mod.py",
-      "sha256": "aabc9cfb97583e9932d73fa771c5ed4b5eb68442538df8d15961238420169ce2",
+      "sha256": "18f859fec9a435674d2751992bd577b5f37d6143ffd5423019307bdc74831500",
       "mode": "100644"
     },
     {

@@ -160,8 +160,9 @@ def code_for(cluster):
     return codes[cluster]
 
 def protected_spans(text):
-    """Markup {..} and emoticon tokens stay verbatim (the game parses them)."""
+    """Markup {..}, [tag]/[/tag] and emoticon tokens stay verbatim (the game parses them)."""
     spans = [m.span() for m in re.finditer(r'\{[^}]*\}', text)]
+    spans += [m.span() for m in re.finditer(r'(?<!\[)\[/?[A-Za-z]+(?:=[^\[\]]*)?\](?!\])', text)]
     for e in EMOTICONS:
         i = text.find(e)
         if i >= 0:
