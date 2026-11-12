@@ -24,6 +24,24 @@ class PublicationTests(unittest.TestCase):
   for ok in ('ThaiMod/src/Loader/Entrypoint.cs','ThaiMod/build.sh','ThaiMod/tools/cil_dump.py'):self.assertTrue(guard.eligible(ok),ok)
   for bad in ('ThaiMod/run_nitwthai.sh','ThaiMod/lib/Mono.Cecil.dll','ThaiMod/lib/doorstop_libs/libdoorstop_x64.so',
               'ThaiMod/game/NITWThai/trace.log','ThaiMod/src/Loader/Entrypoint.dll','ThaiMod/src/Entrypoint.cs'):self.assertFalse(guard.eligible(bad),bad)
+ def test_apk_scripts_are_reviewed_and_game_data_is_ineligible(self):
+  manifest = json.loads(self.files[guard.MANIFEST])
+  reviewed = {row['path'] for row in manifest['files']}
+  for script in ('Tools/apk_thai_poem.py', 'Tools/apk_repack.py'):
+   with self.subTest(path=script):
+    self.assertTrue(guard.eligible(script))
+    self.assertIn(script, reviewed)
+  private_paths = (
+   'APK/build/nitw-thai-poem.apk',
+   'APK/work/orig/data.unity3d',
+   'APK/work/thai/extract.py',
+   'Tools/nitw-thai-poem.apk',
+   'ThaiMod/translations/IntroPoem.tsv',
+   'ThaiMod/data/strings.tsv',
+  )
+  for path in private_paths:
+   with self.subTest(path=path):
+    self.assertFalse(guard.eligible(path))
  def test_binary_disguised_as_source_is_rejected(self):
   p='Tools/inspect_game_window.py';self.files[p]+=b'\0'
   self.assertTrue(any('Binary/NUL' in e for e in guard.audit(self.files)))

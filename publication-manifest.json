@@ -13,7 +13,7 @@
       "path": ".gitignore",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "d304b81f282c9494204abbb401875044fc937f5fa5af1a264f1b5404a502c2e4",
+      "sha256": "bee9cab579a022f53270b42d436957354d5e77743fba2315c76669b6083c3801",
       "mode": "100644"
     },
     {
@@ -326,6 +326,22 @@
       "mode": "100644"
     },
     {
+      "review": "extractor or local inspection tool",
+      "changes": [],
+      "path": "Tools/apk_repack.py",
+      "sha256": "2e81fc0e48103e8b53c6387b038c0be60fb46d17d35884d6a4a366c8879358a2",
+      "mode": "100644"
+    },
+    {
+      "review": "extractor or local inspection tool",
+      "changes": [
+        "replace user-specific paths with environment/relative paths"
+      ],
+      "path": "Tools/apk_thai_poem.py",
+      "sha256": "17e422dd4689701649d34570a3304adfbd4e2a209415bbf0e56c373b2efe2ddb",
+      "mode": "100644"
+    },
+    {
       "path": "Tools/extract_bus_station.py",
       "sha256": "bac5dc66dea585ff677a5e0be00cfcc9136ca30d2793e8a696ad6bdc6c616acb",
       "review": "extractor or local inspection tool",
@@ -568,7 +584,7 @@
       "path": "tests/test_publication.py",
       "review": "publication documentation, audit tooling or existing repository license",
       "changes": [],
-      "sha256": "1bf5ec33c542de103cc64391b963600be4326e2a4804d76fc934e4bea0d52275",
+      "sha256": "671f4b086c400a34fe8a5fc2c7f4a49f4af91a88592f1b44104334da6e772227",
       "mode": "100644"
     }
   ]

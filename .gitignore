@@ -91,3 +91,5 @@
 !/Tools/extract_game_yarn.py
 !/ThaiMod/fetch_deps.sh
 !/docs/thai-mod-setup.md
+!/Tools/apk_thai_poem.py
+!/Tools/apk_repack.py
